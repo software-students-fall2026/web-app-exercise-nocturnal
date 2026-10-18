@@ -1,24 +1,327 @@
+#!/usr/bin/env python3
+
+"""single-person ski app."""
+
+import os
+import datetime
+import re
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    abort,
+)
 import pymongo
 from bson.objectid import ObjectId
-import datetime
-import os
-from flask import Flask, render_template, request, redirect, abort, url_for, make_response
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
+from werkzeug.exceptions import HTTPException
 
-load_dotenv()
-MONGODB_NAME = os.getenv('MONGODB_NAME')
-MONGODB_URI = os.getenv('MONGODB_URI')
+load_dotenv()  # load environment variables from .env file
 
-app = Flask(__name__)
+DIFFICULTIES = (
+    "novice",
+    "easy",
+    "intermediate",
+    "advanced",
+    "expert",
+    "freeride",
+    "extreme",
+)
 
-connection = pymongo.MongoClient(MONGODB_URI)
-db = connection[MONGODB_NAME]
 
-@app.route('/someday')
-def show_someday():
-    run = [
-        {"pisteName": "foo", "pisteLocation": "Japan", "pisteType": "Easy"},
-        {"pisteName": "bar", "pisteLocation": "New York", "pisteType": "Hard"},
-    ]
+def create_app():
+    """set up flask and mongodb."""
 
-    return render_template('someday.html', runs=run)
+    app = Flask(__name__)
+
+    # load flask configuration from env variables
+    configuration = dotenv_values()
+    app.config.from_mapping(configuration)
+
+    connection = pymongo.MongoClient(os.getenv("MONGO_URI"))
+    database = connection[os.getenv("MONGO_DBNAME")]
+
+    try:
+        connection.admin.command("ping")
+        print(" *", "Connected to MongoDB!")
+    except Exception:
+        print(" * MongoDB connection error. Check your local configuration.")
+
+    def find_document(collection, document_id):
+        """find a document or show a not-found page."""
+
+        if not ObjectId.is_valid(document_id):
+            abort(404)
+
+        document = collection.find_one({"_id": ObjectId(document_id)})
+
+        if not document:
+            abort(404)
+
+        return document
+
+    def attempt_form(run_id):
+        """read the date, difficulty, and notes."""
+
+        try:
+            # grabbed this from https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
+            skied_at = datetime.datetime.fromisoformat(request.form["skied_at"])
+        except ValueError:
+            abort(400, "Enter a valid date and time.")
+
+        difficulty = request.form.get("difficulty_rating") or None
+        if difficulty is not None and difficulty not in DIFFICULTIES:
+            abort(400, "Choose an OpenStreetMap difficulty category.")
+
+        return {
+            "run_id": run_id,
+            "skied_at": skied_at,
+            "difficulty_rating": difficulty,
+            "notes": request.form.get("notes", "").strip(),
+        }
+
+    @app.route("/")
+    def home():
+        """show the home page."""
+
+        return render_template("index.html")
+
+    @app.route("/find")
+    def find_runs():
+        """choose a state, resort, and run."""
+
+        state = request.args.get("state", "")
+        resort_id = request.args.get("resort_id", "")
+        name = request.args.get("name", "").strip()
+
+        states = sorted(
+            database.resorts.distinct(
+                "state", {"country": "US", "state": {"$ne": None}}
+            )
+        )
+        resorts = (
+            list(
+                database.resorts.find({"country": "US", "state": state}).sort("name", 1)
+            )
+            if state
+            else []
+        )
+
+        selected = None
+        runs = []
+
+        if resort_id:
+            selected = find_document(database.resorts, resort_id)
+
+            if selected.get("country") != "US":
+                abort(404)
+
+            if not state:
+                state = selected["state"]
+                resorts = list(
+                    database.resorts.find({"country": "US", "state": state}).sort(
+                        "name", 1
+                    )
+                )
+
+            if selected["state"] != state:
+                selected = None
+            else:
+                # grabbed this from https://docs.python.org/3/library/re.html#re.escape
+                runs = list(
+                    database.runs.find(
+                        {
+                            "resort_id": selected["_id"],
+                            "name": {"$regex": re.escape(name), "$options": "i"},
+                        }
+                    ).sort("name", 1)
+                )
+
+        return render_template(
+            "find.html",
+            states=states,
+            state=state,
+            resorts=resorts,
+            selected=selected,
+            runs=runs,
+            name=name,
+        )
+
+    @app.route("/run/<run_id>")
+    def run_details(run_id):
+        """show the run and its attempts."""
+
+        document = find_document(database.runs, run_id)
+        resort = database.resorts.find_one({"_id": document["resort_id"]})
+        attempts = list(
+            database.attempts.find({"run_id": document["_id"]}).sort("skied_at", -1)
+        )
+
+        # grabbed this from https://svgwg.org/svg2-draft/shapes.html
+        points = ""
+        coordinates = (document.get("geometry") or {}).get("coordinates", [])
+
+        if len(coordinates) > 1:
+            longitudes = [point[0] for point in coordinates]
+            latitudes = [point[1] for point in coordinates]
+            width = max(longitudes) - min(longitudes) or 1
+            height = max(latitudes) - min(latitudes) or 1
+            scale = min(280 / width, 180 / height)
+            points = " ".join(
+                f"{10 + (longitude - min(longitudes)) * scale},{10 + (max(latitudes) - latitude) * scale}"
+                for longitude, latitude in coordinates
+            )
+
+        return render_template(
+            "run.html",
+            document=document,
+            resort=resort,
+            attempts=attempts,
+            points=points,
+        )
+
+    @app.route("/run/<run_id>/save", methods=["POST"])
+    def save_run_post(run_id):
+        """add the run to someday or today."""
+
+        document = find_document(database.runs, run_id)
+        destination = request.form["destination"]
+
+        if destination not in ("someday", "today"):
+            abort(400)
+
+        criteria = {"run_id": document["_id"], "list": destination}
+        database.saved_runs.update_one(
+            criteria,
+            {"$setOnInsert": {**criteria, "created_at": datetime.datetime.utcnow()}},
+            upsert=True,
+        )
+
+        return redirect(url_for(destination))
+
+    @app.route("/someday")
+    def someday():
+        """show someday runs."""
+
+        documents = list(database.saved_runs.find({"list": "someday"}))
+
+        for document in documents:
+            document["run"] = database.runs.find_one({"_id": document["run_id"]})
+
+        return render_template("saved_runs.html", documents=documents, title="Someday")
+
+    @app.route("/today")
+    def today():
+        """show today runs."""
+
+        documents = list(database.saved_runs.find({"list": "today"}))
+
+        for document in documents:
+            document["run"] = database.runs.find_one({"_id": document["run_id"]})
+
+        return render_template("saved_runs.html", documents=documents, title="Today")
+
+    @app.route("/saved/<saved_id>/delete", methods=["POST"])
+    def delete_saved_post(saved_id):
+        """remove a run from one list."""
+
+        document = find_document(database.saved_runs, saved_id)
+        database.saved_runs.delete_one({"_id": document["_id"]})
+
+        return redirect(url_for("today" if document["list"] == "today" else "someday"))
+
+    @app.route("/run/<run_id>/log")
+    def log_attempt(run_id):
+        """show the attempt form."""
+
+        run = find_document(database.runs, run_id)
+
+        document = {
+            "skied_at": datetime.datetime.utcnow(),
+            "notes": "",
+            "difficulty_rating": None,
+        }
+
+        return render_template(
+            "attempt.html", document=document, run=run, difficulties=DIFFICULTIES
+        )
+
+    @app.route("/run/<run_id>/log", methods=["POST"])
+    def log_attempt_post(run_id):
+        """save a new attempt."""
+
+        run = find_document(database.runs, run_id)
+        document = attempt_form(run["_id"])
+        attempt_id = database.attempts.insert_one(document).inserted_id
+
+        return redirect(url_for("attempt", attempt_id=attempt_id))
+
+    @app.route("/history")
+    def history():
+        """show past attempts."""
+
+        documents = list(database.attempts.find({}).sort("skied_at", -1))
+
+        for document in documents:
+            document["run"] = database.runs.find_one({"_id": document["run_id"]})
+
+        return render_template("history.html", documents=documents)
+
+    @app.route("/attempt/<attempt_id>")
+    def attempt(attempt_id):
+        """show an attempt for editing."""
+
+        document = find_document(database.attempts, attempt_id)
+        run = find_document(database.runs, str(document["run_id"]))
+
+        return render_template(
+            "attempt.html", document=document, run=run, difficulties=DIFFICULTIES
+        )
+
+    @app.route("/attempt/<attempt_id>", methods=["POST"])
+    def attempt_post(attempt_id):
+        """save changes to an attempt."""
+
+        document = find_document(database.attempts, attempt_id)
+        update = attempt_form(document["run_id"])
+        database.attempts.update_one({"_id": document["_id"]}, {"$set": update})
+
+        return redirect(url_for("attempt", attempt_id=attempt_id))
+
+    @app.route("/attempt/<attempt_id>/delete", methods=["POST"])
+    def delete_attempt_post(attempt_id):
+        """delete an attempt."""
+
+        document = find_document(database.attempts, attempt_id)
+        database.attempts.delete_one({"_id": document["_id"]})
+
+        return redirect(url_for("history"))
+
+    @app.errorhandler(Exception)
+    def handle_error(error):
+        """show an error without exposing private details."""
+
+        if isinstance(error, HTTPException):
+            return render_template("error.html", message=error.description), error.code
+
+        return (
+            render_template(
+                "error.html",
+                message="Database unavailable. Try again.",
+            ),
+            503,
+        )
+
+    return app
+
+
+app = create_app()
+
+if __name__ == "__main__":
+    FLASK_PORT = os.getenv("FLASK_PORT", "5000")
+    FLASK_ENV = os.getenv("FLASK_ENV")
+    print(f"FLASK_ENV: {FLASK_ENV}, FLASK_PORT: {FLASK_PORT}")
+
+    app.run(port=FLASK_PORT)

@@ -20,7 +20,35 @@ A mobile web app for skiers to keep track of the runs they're dreaming about, di
 
 ## Steps necessary to run the software
 
-See instructions. Delete this line and place instructions to download, configure, and run the software here.
+### macos
+
+1. open a terminal in this repository.
+2. create the virtual environment: `python3 -m venv .venv`.
+3. activate it: `source .venv/bin/activate`.
+4. install dependencies: `python -m pip install -r requirements.txt`.
+5. run `cp .env.example .env` and enter your database connection in `.env`.
+6. start the app: `python -m flask --app app run --port 5000`.
+7. open <http://127.0.0.1:5000>.
+
+### linux
+
+1. open a terminal in this repository.
+2. create the virtual environment: `python3 -m venv .venv`.
+3. activate it: `source .venv/bin/activate`.
+4. install dependencies: `python -m pip install -r requirements.txt`.
+5. run `cp .env.example .env` and enter your database connection in `.env`.
+6. start the app: `python -m flask --app app run --port 5000`.
+7. open <http://127.0.0.1:5000>.
+
+### windows
+
+1. open git bash in this repository.
+2. create the virtual environment: `python -m venv .venv`.
+3. activate it: `source .venv/scripts/activate`.
+4. install dependencies: `python -m pip install -r requirements.txt`.
+5. run `cp .env.example .env` and enter your database connection in `.env`.
+6. start the app: `python -m flask --app app run --port 5000`.
+7. open <http://127.0.0.1:5000>.
 
 ## Task boards
 

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<h1>History</h1>
+
+{% for document in documents %}
+  <p>
+    <a href="{{ url_for('attempt', attempt_id=document._id) }}">{{ document.run.name if document.run else 'Run unavailable' }}</a>
+    — {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC
+    — {{ document.difficulty_rating or 'Not rated' }}
+  </p>
+{% else %}
+  <p>No attempts.</p>
+{% endfor %}
+{% endblock %}
