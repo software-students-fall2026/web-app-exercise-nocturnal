@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ski App</title>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('find_runs') }}">Find a run</a></li>
+          <li><a href="{{ url_for('someday') }}">Someday</a></li>
+          <li><a href="{{ url_for('today') }}">Today</a></li>
+          <li><a href="{{ url_for('history') }}">History</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      {% block container %}{% endblock %}
+    </main>
+    <footer>
+      <p>designed lovingly by team nocturnal</p>
+      <p>data sourced from OpenSkiData / OpenSkiMap.org</p>
+      <p>© 2026 team nocturnal</p>
+    </footer>
+  </body>
+</html>

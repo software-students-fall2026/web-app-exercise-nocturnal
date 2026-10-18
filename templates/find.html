@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<h1>Find a run</h1>
+
+<form action="{{ url_for('find_runs') }}" method="GET">
+  <label for="state">State</label>
+  <select id="state" name="state" required>
+    <option value="">Choose a state</option>
+    {% for item in states %}
+      <option value="{{ item }}" {% if item == state %}selected{% endif %}>{{ item }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">Show resorts</button>
+</form>
+
+{% if resorts %}
+  <form action="{{ url_for('find_runs') }}" method="GET">
+    <input type="hidden" name="state" value="{{ state }}">
+    <p>
+      <label for="resort_id">Resort</label>
+      <select id="resort_id" name="resort_id" required>
+        <option value="">Choose a resort</option>
+        {% for resort in resorts %}
+          <option value="{{ resort._id }}" {% if selected and resort._id == selected._id %}selected{% endif %}>{{ resort.name }}</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
+      <label for="name">Run name</label>
+      <input id="name" name="name" value="{{ name }}">
+    </p>
+    <button type="submit">Show runs</button>
+    <a href="{{ url_for('find_runs', state=state, resort_id=selected._id if selected else '') }}">Clear</a>
+  </form>
+{% elif state %}
+  <p>No resorts.</p>
+{% elif not states %}
+  <p>No catalog uploaded.</p>
+{% endif %}
+
+{% if selected %}
+  <h2>{{ selected.name }}</h2>
+  {% for document in runs %}
+    <p><a href="{{ url_for('run_details', run_id=document._id) }}">{{ document.name }}</a> — {{ document.difficulty or 'Not available' }}</p>
+  {% else %}
+    <p>No runs found.</p>
+  {% endfor %}
+{% endif %}
+{% endblock %}
