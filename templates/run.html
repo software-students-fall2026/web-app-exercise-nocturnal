@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<h1>{{ document.name }}</h1>
+<p>resort: {{ resort.name if resort else 'Not available' }}</p>
+<p>state: {{ resort.state if resort else 'Not available' }}</p>
+{% for field in ('ref', 'description', 'difficulty', 'difficultyConvention', 'grooming', 'oneway', 'lit', 'gladed', 'patrolled', 'snowmaking') %}
+  {% if document.get(field) is not none %}
+    <p>{{ field }}: {{ document[field]|string|lower if document[field] is boolean else document[field] }}</p>
+  {% endif %}
+{% endfor %}
+
+<h2>Map</h2>
+{% if points %}
+  <svg viewBox="0 0 300 200" width="300" height="200" role="img" aria-label="{{ document.name }} outline">
+    <polyline points="{{ points }}" fill="none" stroke="black" stroke-width="2"></polyline>
+  </svg>
+{% else %}
+  <p>No map.</p>
+{% endif %}
+
+<form action="{{ url_for('save_run_post', run_id=document._id) }}" method="POST">
+  <button name="destination" value="someday" type="submit">Save to Someday</button>
+  <button name="destination" value="today" type="submit">Add to Today</button>
+</form>
+
+<p><a href="{{ url_for('log_attempt', run_id=document._id) }}">Log attempt</a></p>
+
+<h2>Attempts</h2>
+{% for attempt in attempts %}
+  <p>
+    <a href="{{ url_for('attempt', attempt_id=attempt._id) }}">{{ attempt.skied_at.strftime('%Y-%m-%d') }}</a>
+    — Difficulty: {{ attempt.difficulty_rating or 'Not rated' }}
+  </p>
+{% else %}
+  <p>No attempts.</p>
+{% endfor %}
+
+<p><a href="{{ url_for('find_runs', resort_id=document.resort_id) }}">Back to runs</a></p>
+{% endblock %}
