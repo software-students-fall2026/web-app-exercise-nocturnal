@@ -1,0 +1,19 @@
+<html>
+
+<head>
+    <title>Someday</title>
+</head>
+
+<body>
+    <h1>SomeDay</h1>
+    <h2>Welcome to your someday runs!</h2>
+    <p>Your runs for Someday:</p>
+    <ul>
+        {% for run in runs %}
+        <li>{{run.pisteName}} at {{run.pisteLocation}} Type {{run.pisteType}} </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>
+

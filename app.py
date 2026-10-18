@@ -14,3 +14,11 @@ app = Flask(__name__)
 connection = pymongo.MongoClient(MONGODB_URI)
 db = connection[MONGODB_NAME]
 
+@app.route('/someday')
+def show_someday():
+    run = [
+        {"pisteName": "foo", "pisteLocation": "Japan", "pisteType": "Easy"},
+        {"pisteName": "bar", "pisteLocation": "New York", "pisteType": "Hard"},
+    ]
+
+    return render_template('someday.html', runs=run)
