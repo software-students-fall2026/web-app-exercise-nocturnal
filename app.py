@@ -18,7 +18,7 @@ from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
 from werkzeug.exceptions import HTTPException
 
-load_dotenv()  # load environment variables from .env file
+load_dotenv(".env")  # load environment variables from .env file
 
 DIFFICULTIES = (
     "novice",
@@ -37,10 +37,13 @@ def create_app():
     app = Flask(__name__)
 
     # load flask configuration from env variables
-    configuration = dotenv_values()
+    configuration = dotenv_values(".env")
     app.config.from_mapping(configuration)
 
-    connection = pymongo.MongoClient(os.getenv("MONGO_URI"))
+    local_database = os.getenv("MONGO_LOCAL", "false").lower() == "true"
+    connection = pymongo.MongoClient(
+        os.environ["MONGO_LOCAL_URI"] if local_database else os.getenv("MONGO_URI")
+    )
     database = connection[os.getenv("MONGO_DBNAME")]
 
     try:
