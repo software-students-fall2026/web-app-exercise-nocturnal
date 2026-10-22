@@ -12,12 +12,12 @@ from pymongo import MongoClient, UpdateOne
 
 def setup_local_database():
     """
-    load the local ski catalog while keeping saved records and their ids.
+    load ski catalog into local database.
     returns:
         none: the local connection settings and database are ready for flask.
     """
 
-    # 1) give the nocturnal ski patrol its local database credentials
+    # 1) feed local database credentials
     local_username = "nocturnal_yeti"
     local_password = "powder_after_dark"
     local_database_name = "sweProject2"
@@ -28,7 +28,7 @@ def setup_local_database():
     os.environ["MONGO_LOCAL_URI"] = local_database_uri
     os.environ["MONGO_DBNAME"] = local_database_name
 
-    # 2) unpack the seed and restore the mongodb ids stored in the file
+    # 2) unzip the compressed catalog seed and restore the mongodb ids stored in the file
     with gzip.open("setup/catalog.json.gz", "rt", encoding="utf-8") as seed_file:
         catalog = json_util.loads(seed_file.read())
 
@@ -66,11 +66,11 @@ def setup_local_database():
 
 
 if __name__ == "__main__":
-    # 1) initialize local data only when the single env flag selects local mode
+    # 1) protect against false local setup
     if os.getenv("MONGO_LOCAL", "false").lower() == "true":
         setup_local_database()
 
-    # 2) start flask with the selected connection settings and the same python runtime
+    # 2) start flask with selected connection strings and regular start command
     os.execvp(
         sys.executable,
         [sys.executable, "-m", "flask", "--app", "app", "run", "--host=0.0.0.0"],

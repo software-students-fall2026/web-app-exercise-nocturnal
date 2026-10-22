@@ -20,7 +20,7 @@ A mobile web app for skiers to keep track of the runs they're dreaming about, di
 
 ## Steps necessary to run the software
 
-team nocturnal is excited you desire to run our wonderous application. to start with you must make a choice:
+team nocturnal is excited you want to run our wonderous application. to start with you must make a choice:
 
 - source data from our shared mongodb atlas (recommended)
 - or attempt to run locally
@@ -41,7 +41,7 @@ we've looked ahead at the [course's docker notes](https://knowledge.kitchen/cont
 
 1. install and start docker desktop on macos/windows, or docker engine on linux.
 2. open a terminal in this repository. on windows, use git bash for the copy command below.
-3. if you don't already have `.env`, copy the example: `cp .env.example .env`. set `MONGO_LOCAL=true` in `.env`; leave any saved cloud settings in place.
+3. if you don't already have `.env`, copy the example: `cp .env.example .env`. set `MONGO_LOCAL=true` in `.env`; leave any saved cloud settings (or lack of settings) in place.
 4. build the app image: `docker build -f setup/Dockerfile -t nocturnal .`.
 5. create the app network once: `docker network create nocturnal`.
 6. download the mongodb image: `docker pull mongo:latest`.

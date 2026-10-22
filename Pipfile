@@ -14,4 +14,4 @@ mongomock = "*"
 black = "*"
 
 [requires]
-python_version = "3.12"
+python_version = "3.12" # bumping python version to the one i've been testing on
