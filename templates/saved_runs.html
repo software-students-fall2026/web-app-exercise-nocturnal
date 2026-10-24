@@ -3,16 +3,60 @@
 {% block container %}
 <h1>{{ title }}</h1>
 
+{% if title == 'Someday' %}
+<form method="GET" action="{{url_for('someday')}}">
+  <input type="text" name="name" placeholder="Search Run" value="{{ name }}">
+  
+  <select name="difficulty">
+    <option value=""> Any Difficulty</option>
+    {% for d in difficulties %}
+    <option value="{{ d }}" {% if difficulty == d %} selected {% endif %}> {{ d }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="state">
+    <option value=""> Any State </option>
+    {% for s in states %}
+    <option value="{{ s }}" {% if state==s %} selected {% endif %}> {{ s }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">Show Runs</button>
+</form>
+
+<form method="GET" action="{{url_for('someday')}}">
+ <button type="submit">Reset To All</button>
+</form>
+{% endif %}
+
 {% for document in documents %}
   <article>
     {% if document.run %}
       <h2><a href="{{ url_for('run_details', run_id=document.run._id) }}">{{ document.run.name }}</a></h2>
+      
+      {% if document.resort %}
+      <p>{{document.resort.name}}, {{document.resort.state}}</p>
+      {% endif %}
+      {% if document.run.difficulty %}
+      <p>Difficulty: {{document.run.difficulty}}</p>
+      {% endif %}
+      {% if document.created_at %}
+      <p>{% if title == 'Today' %} 
+        Added To Today {% else %} Saved {% endif %}: {{document.created_at.strftime("%d %B %Y")}}</p>
+      {% endif %}
+      <p>Attempts: {{document.attempt_count}}</p>
+      {% for attempt in document.latest_attempt %}
+      <p>Last Skied: {{attempt.skied_at.strftime("%d %B %Y")}}</p>
+      {% endfor %}
+      
       <p><a href="{{ url_for('log_attempt', run_id=document.run._id) }}">Log attempt</a></p>
+      
       {% if title == 'Someday' %}
         <form action="{{ url_for('save_run_post', run_id=document.run._id) }}" method="POST">
           <button name="destination" value="today" type="submit">Add to Today</button>
         </form>
       {% endif %}
+
     {% else %}
       <p>Run unavailable.</p>
     {% endif %}
