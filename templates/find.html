@@ -42,7 +42,35 @@
 {% if selected %}
   <h2>{{ selected.name }}</h2>
   {% for document in runs %}
-    <p><a href="{{ url_for('run_details', run_id=document._id) }}">{{ document.name }}</a> — {{ document.difficulty or 'Not available' }}</p>
+    <p>
+      <a href="{{ url_for('run_details', run_id=document._id) }}">{{ document.name }}</a>
+      — Official difficulty: {{ document.difficulty or 'Not available' }}
+    </p>
+
+    {% if document.community_ratings %}
+      <p>
+        Community ratings:
+        {% for rating in document.community_ratings %}
+          {{ rating.difficulty }}: {{ rating.count }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+        ({{ document.report_count }} reports)
+      </p>
+    {% else %}
+      <p>No community ratings yet.</p>
+    {% endif %}
+
+    <form action="{{ url_for('community_rating_post', run_id=document._id) }}" method="POST">
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <label for="difficulty-{{ document._id }}">Your difficulty rating</label>
+      <select id="difficulty-{{ document._id }}" name="difficulty_rating" required>
+        <option value="">Choose a difficulty</option>
+        {% for difficulty in difficulties %}
+          <option value="{{ difficulty }}">{{ difficulty|capitalize }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Submit rating</button>
+    </form>
+
   {% else %}
     <p>No runs found.</p>
   {% endfor %}

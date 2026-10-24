@@ -1,4 +1,23 @@
 {% extends 'base.html' %}
+
 {% block container %}
 <h1>Ski App</h1>
+<p>Choose where you want to go.</p>
+
+<nav aria-label="Ski app sections">
+  <ul>
+    <li>
+      <a href="{{ url_for('someday') }}">Someday</a>
+    </li>
+    <li>
+      <a href="{{ url_for('today') }}">Today</a>
+    </li>
+    <li>
+      <a href="{{ url_for('history') }}">Run History</a>
+    </li>
+    <li>
+      <a href="{{ url_for('find_runs') }}">Find Runs</a>
+    </li>
+  </ul>
+</nav>
 {% endblock %}
