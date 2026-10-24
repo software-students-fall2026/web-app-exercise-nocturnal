@@ -27,7 +27,8 @@
 </form>
 
 {% if document._id %}
-  <form action="{{ url_for('delete_attempt_post', attempt_id=document._id) }}" method="POST">
+  <form action="{{ url_for('delete_attempt_post', attempt_id=document._id) }}" method="POST"
+    onsubmit="return confirm('Delete this attempt?');">
     <button type="submit">Delete</button>
   </form>
 {% endif %}
