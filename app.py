@@ -271,6 +271,17 @@ def create_app():
 
     @app.route("/attempt/<attempt_id>")
     def attempt(attempt_id):
+        """show an attempt."""
+
+        document = find_document(database.attempts, attempt_id)
+        run = find_document(database.runs, str(document["run_id"]))
+
+        return render_template(
+            "reflection.html", document=document, run=run
+        )
+
+    @app.route("/attempt/<attempt_id>/edit")
+    def edit_attempt(attempt_id):
         """show an attempt for editing."""
 
         document = find_document(database.attempts, attempt_id)
