@@ -212,15 +212,37 @@ def create_app():
                 document["latest_attempt"] = list(
                     database.attempts.find({"run_id": run["_id"]}).sort("skied_at", -1).limit(1)
                 )
+
         return documents
 
     @app.route("/someday")
     def someday():
         """show someday runs."""
 
+        name = request.args.get("name", "").strip().lower()
+        difficulty = request.args.get("difficulty", "")
+        state = request.args.get("state", "").strip()
+
+        states = sorted(
+            database.resorts.distinct("state", {"country": "US", "state": {"$ne": None}})
+        )
+
         documents = attach_run_details(list(database.saved_runs.find({"list": "someday"})))
 
-        return render_template("saved_runs.html", documents=documents, title="Someday")
+        # Filter through Saved runs 
+        filtered = []
+        for document in documents:
+            run = document["run"]
+            resort = document.get("resort")
+
+            if name and (run is None or name not in run.get("name").lower()):
+                continue
+            if difficulty and (run is None or run.get("difficulty") != difficulty):
+                continue
+            if state and (resort is None or resort.get("state") != state):
+                continue
+            filtered.append(document)
+        return render_template("saved_runs.html", documents=filtered, title="Someday", name=name, difficulty=difficulty, state=state, states=states, difficulties=DIFFICULTIES)
 
     @app.route("/today")
     def today():
