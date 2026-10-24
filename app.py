@@ -63,24 +63,32 @@ def create_app():
         return document
 
     def attempt_form(run_id):
-        """read the date, difficulty, and notes."""
+        """Read the date, difficulty, notes, and completion status."""
 
         try:
-            # grabbed this from https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
             skied_at = datetime.datetime.fromisoformat(request.form["skied_at"])
-        except ValueError:
+        except (ValueError, KeyError):
             abort(400, "Enter a valid date and time.")
 
         difficulty = request.form.get("difficulty_rating") or None
+
         if difficulty is not None and difficulty not in DIFFICULTIES:
             abort(400, "Choose an OpenStreetMap difficulty category.")
+
+        # NEW: Read and validate the completion status
+        completed = request.form.get("completed")
+
+        if completed not in ("yes", "no"):
+            abort(400, "Please indicate whether you completed the run.")
 
         return {
             "run_id": run_id,
             "skied_at": skied_at,
             "difficulty_rating": difficulty,
             "notes": request.form.get("notes", "").strip(),
+            "completed": completed == "yes",
         }
+
 
     @app.route("/")
     def home():

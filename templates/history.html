@@ -1,15 +1,92 @@
+
 {% extends 'base.html' %}
 
 {% block container %}
-<h1>History</h1>
+<h1>Run History</h1>
+
+<form action="{{ url_for('history') }}" method="GET">
+
+  <p>
+    <label for="resort_id">Filter by Resort</label>
+
+    <select id="resort_id" name="resort_id">
+      <option value="">All Resorts</option>
+
+      {% for resort in resorts %}
+        <option
+          value="{{ resort._id }}"
+          {% if (resort._id|string) == selected_resort_id %}
+            selected
+          {% endif %}
+        >
+          {{ resort.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </p>
+
+  <p>
+    <label for="date">Filter by Date</label>
+
+    <input
+      type="date"
+      id="date"
+      name="date"
+      value="{{ selected_date }}"
+    >
+  </p>
+
+  <button type="submit">Apply Filters</button>
+
+  <a href="{{ url_for('history') }}">Clear Filters</a>
+
+</form>
+<box border radius="lg" padding={3} gap={2}>
+  <row align="center" justify="between">
+    **Run History test checklist**
+    <text color="secondary" size="xs">{done.length}/6</text>
+  </row>
+  {#each tests as test,i}
+    <checkbox key={i} checked={done.includes(i)} onChange={v=>setDone(prev=>v?[...prev,i]:prev.filter(n=>n!==i))}>{test}</checkbox>
+  {/each}
+</box>
 
 {% for document in documents %}
-  <p>
-    <a href="{{ url_for('attempt', attempt_id=document._id) }}">{{ document.run.name if document.run else 'Run unavailable' }}</a>
-    — {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC
-    — {{ document.difficulty_rating or 'Not rated' }}
-  </p>
+  <div class="history-card">
+
+    <p>
+      <a href="{{ url_for('attempt', attempt_id=document._id) }}">
+        {{ document.run.name if document.run else 'Run unavailable' }}
+      </a>
+    </p>
+
+    <p>
+      Date: {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC
+    </p>
+
+    <p>
+      {% if document.completed is sameas true %}
+        Completed: Yes
+      {% elif document.completed is sameas false %}
+        Completed: No
+      {% else %}
+        Completion not recorded
+      {% endif %}
+    </p>
+
+    <p>
+      Difficulty: {{ document.difficulty_rating or 'Not rated' }}
+    </p>
+
+    <p>
+      <a href="{{ url_for('attempt', attempt_id=document._id) }}">
+        View Reflection
+      </a>
+    </p>
+
+  </div>
 {% else %}
   <p>No attempts.</p>
 {% endfor %}
+
 {% endblock %}

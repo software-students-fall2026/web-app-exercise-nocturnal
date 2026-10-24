@@ -9,6 +9,32 @@
     <label for="skied_at">Date (UTC)</label>
     <input id="skied_at" name="skied_at" type="datetime-local" value="{{ document.skied_at.strftime('%Y-%m-%dT%H:%M') }}" required>
   </p>
+  <fieldset>
+    <legend>Did you complete this run?</legend>
+    
+    <label for="completed_yes">
+      <input
+        type="radio"
+        id="completed_yes"
+        name="completed"
+        value="yes"
+        {%if document.completed is sameas true %}checked{% endif %}
+        required
+      >
+      Yes
+    </label>
+    <label for="completed_no">  
+      <input
+        type="radio"
+        id="completed_no"
+        name="completed"
+        value="no"
+        {% if document.completed is sameas false %}checked{% endif %}
+        required
+      >
+      No
+    </label>
+  </fieldset>
   <p>
     <label for="difficulty_rating">Difficulty</label>
     <select id="difficulty_rating" name="difficulty_rating">
