@@ -201,14 +201,24 @@ def create_app():
 
         return redirect(url_for(destination))
 
+    def attach_run_details(documents):
+        for document in documents:
+            run = database.runs.find_one({"_id": document["run_id"]})
+            document["run"] = run
+
+            if run: 
+                document["resort"] = database.resorts.find_one({"_id": run["resort_id"]})
+                document["attempt_count"] = database.attempts.count_documents({"run_id": run["_id"]})
+                document["latest_attempt"] = list(
+                    database.attempts.find({"run_id": run["_id"]}).sort("skied_at", -1).limit(1)
+                )
+        return documents
+
     @app.route("/someday")
     def someday():
         """show someday runs."""
 
-        documents = list(database.saved_runs.find({"list": "someday"}))
-
-        for document in documents:
-            document["run"] = database.runs.find_one({"_id": document["run_id"]})
+        documents = attach_run_details(list(database.saved_runs.find({"list": "someday"})))
 
         return render_template("saved_runs.html", documents=documents, title="Someday")
 
@@ -216,10 +226,7 @@ def create_app():
     def today():
         """show today runs."""
 
-        documents = list(database.saved_runs.find({"list": "today"}))
-
-        for document in documents:
-            document["run"] = database.runs.find_one({"_id": document["run_id"]})
+        documents = attach_run_details(list(database.saved_runs.find({"list": "today"})))
 
         return render_template("saved_runs.html", documents=documents, title="Today")
 
