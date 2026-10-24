@@ -3,6 +3,32 @@
 {% block container %}
 <h1>{{ title }}</h1>
 
+{% if title == 'Someday' %}
+<form method="GET" action="{{url_for('someday')}}">
+  <input type="text" name="name" placeholder="Search Run" value="{{ name }}">
+  
+  <select name="difficulty">
+    <option value=""> Any Difficulty</option>
+    {% for d in difficulties %}
+    <option value="{{ d }}" {% if difficulty == d %} selected {% endif %}> {{ d }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="state">
+    <option value=""> Any State </option>
+    {% for s in states %}
+    <option value="{{ s }}" {% if state==s %} selected {% endif %}> {{ s }}</option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">Show Runs</button>
+</form>
+
+<form method="GET" action="{{url_for('someday')}}">
+ <button type="submit">Reset To All</button>
+</form>
+{% endif %}
+
 {% for document in documents %}
   <article>
     {% if document.run %}
@@ -16,7 +42,7 @@
       {% endif %}
       {% if document.created_at %}
       <p>{% if title == 'Today' %} 
-        Added to Today {% else %} Saved {% endif %}: {{document.created_at.strftime("%d %B %Y")}}</p>
+        Added To Today {% else %} Saved {% endif %}: {{document.created_at.strftime("%d %B %Y")}}</p>
       {% endif %}
       <p>Attempts: {{document.attempt_count}}</p>
       {% for attempt in document.latest_attempt %}
