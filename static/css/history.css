@@ -47,7 +47,9 @@ body:has(.history-page) {
 }
 
 .history-filters select,
-.history-filters input[type="date"] {
+.history-filters input[type="date"],
+.history-filters input[type="datetime-local"],
+.history-filters textarea {
     width: 100%;
     padding: 12px;
     font-size: 16px;
