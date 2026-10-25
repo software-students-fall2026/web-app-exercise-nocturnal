@@ -60,7 +60,7 @@
     {% else %}
       <p>Run unavailable.</p>
     {% endif %}
-    <form action="{{ url_for('delete_saved_post', saved_id=document._id) }}" method="POST">
+    <form action="{{ url_for('confirm_delete_saved', saved_id=document._id) }}" method="GET">
       <button type="submit">Remove</button>
     </form>
   </article>

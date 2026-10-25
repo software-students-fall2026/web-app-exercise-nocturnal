@@ -315,6 +315,15 @@ def create_app():
 
         return render_template("saved_runs.html", documents=documents, title="Today")
 
+    @app.route("/saved/<saved_id>/delete")
+    def confirm_delete_saved(saved_id):
+        """confirm before removing a run from one list"""
+
+        document = find_document(database.saved_runs, saved_id)
+        document["run"] = database.runs.find_one({"_id": document["run_id"]})
+
+        return render_template("confirm_delete.html", document=document)
+    
     @app.route("/saved/<saved_id>/delete", methods=["POST"])
     def delete_saved_post(saved_id):
         """remove a run from one list."""
