@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/find.css') }}">
+{% endblock %}
+
 {% block container %}
+<section class="find-page">
 <h1>Find a run</h1>
+
+<div class="find-form-box">
 
 <form action="{{ url_for('find_runs') }}" method="GET">
   <label for="state">State</label>
@@ -38,10 +45,12 @@
 {% elif not states %}
   <p>No catalog uploaded.</p>
 {% endif %}
+</div>
 
 {% if selected %}
   <h2>{{ selected.name }}</h2>
   {% for document in runs %}
+  <article>
     <p>
       <a href="{{ url_for('run_details', run_id=document._id) }}">{{ document.name }}</a>
       — Official difficulty: {{ document.difficulty or 'Not available' }}
@@ -70,9 +79,12 @@
       </select>
       <button type="submit">Submit rating</button>
     </form>
-
+  </article>
+  
   {% else %}
     <p>No runs found.</p>
   {% endfor %}
 {% endif %}
+
+</section>
 {% endblock %}
