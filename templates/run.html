@@ -10,14 +10,6 @@
   {% endif %}
 {% endfor %}
 
-<h2>Map</h2>
-{% if points %}
-  <svg viewBox="0 0 300 200" width="300" height="200" role="img" aria-label="{{ document.name }} outline">
-    <polyline points="{{ points }}" fill="none" stroke="black" stroke-width="2"></polyline>
-  </svg>
-{% else %}
-  <p>No map.</p>
-{% endif %}
 
 <form action="{{ url_for('save_run_post', run_id=document._id) }}" method="POST">
   <button name="destination" value="someday" type="submit">Save to Someday</button>

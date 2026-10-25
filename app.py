@@ -208,27 +208,11 @@ def create_app():
             database.attempts.find({"run_id": document["_id"]}).sort("skied_at", -1)
         )
 
-        # grabbed this from https://svgwg.org/svg2-draft/shapes.html
-        points = ""
-        coordinates = (document.get("geometry") or {}).get("coordinates", [])
-
-        if len(coordinates) > 1:
-            longitudes = [point[0] for point in coordinates]
-            latitudes = [point[1] for point in coordinates]
-            width = max(longitudes) - min(longitudes) or 1
-            height = max(latitudes) - min(latitudes) or 1
-            scale = min(280 / width, 180 / height)
-            points = " ".join(
-                f"{10 + (longitude - min(longitudes)) * scale},{10 + (max(latitudes) - latitude) * scale}"
-                for longitude, latitude in coordinates
-            )
-
         return render_template(
             "run.html",
             document=document,
             resort=resort,
             attempts=attempts,
-            points=points,
         )
 
     @app.route("/run/<run_id>/save", methods=["POST"])
