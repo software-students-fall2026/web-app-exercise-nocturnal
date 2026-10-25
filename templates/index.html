@@ -1,23 +1,39 @@
 {% extends 'base.html' %}
 
-{% block container %}
-<h1>Ski App</h1>
-<p>Choose where you want to go.</p>
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
 
-<nav aria-label="Ski app sections">
-  <ul>
-    <li>
-      <a href="{{ url_for('someday') }}">Someday</a>
-    </li>
-    <li>
-      <a href="{{ url_for('today') }}">Today</a>
-    </li>
-    <li>
-      <a href="{{ url_for('history') }}">Run History</a>
-    </li>
-    <li>
-      <a href="{{ url_for('find_runs') }}">Find Runs</a>
-    </li>
-  </ul>
-</nav>
+{% block container %}
+<section class="home-page">
+  <h1>Profile Overview</h1>
+
+  <div class="box">
+    <h2>Attempt Count</h2>
+    <p>{{attempt_count}}</p>
+  </div>
+
+  <div class="box">
+    <h2>Today</h2>
+    <p>{{ today_count }}</p>
+  </div>
+
+  <div class="box">
+    <h2>Someday</h2>
+    <p>{{ someday_count }}</p>
+  </div>
+
+  <div class="box">
+    <h2>Latest Attempt</h2>
+
+    {% if latest_attempt and latest_run %}
+      <p>
+        <a href="{{ url_for('run_details', run_id=latest_run._id) }}">{{ latest_run.name }}</a>
+        — {{ latest_attempt.skied_at.month }}/{{ latest_attempt.skied_at.day }}
+      </p>
+    {% else %}
+      <p> No Attempts Logged Yet</p>
+    {% endif %}
+  </div>
+</section>
 {% endblock %}

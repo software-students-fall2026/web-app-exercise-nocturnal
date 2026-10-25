@@ -133,8 +133,23 @@ def create_app():
     @app.route("/")
     def home():
         """Show the home page."""
-        return render_template("index.html")
 
+        attempt_count = database.attempts.count_documents({})
+        today_count = database.saved_runs.count_documents({"list": "today"})
+        someday_count = database.saved_runs.count_documents({"list": "someday"})
+
+        latest_attempt = database.attempts.find_one(sort = [("skiid_at", -1)])
+        if latest_attempt: latest_run = database.runs.find_one({"_id": latest_attempt["run_id"]})
+        else: latest_run = None
+
+        return render_template(
+            "index.html",
+            attempt_count=attempt_count,
+            today_count=today_count,
+            someday_count=someday_count,
+            latest_attempt=latest_attempt,
+            latest_run=latest_run
+        )
 
     @app.route("/find")
     def find_runs():

@@ -1,0 +1,62 @@
+body:has(.home-page) {
+    background-color: #E3E6F2;
+}
+
+.home-page {
+    max-width: 480px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    font-family: Arial, sans-serif;
+    color: #292B3E;
+}
+
+.home-page * {
+    box-sizing: border-box;
+}
+
+.home-page h1 {
+    font-size: 36px;
+    font-weight: 500;
+    margin: 0 0 30px;
+}
+
+.home-page .box {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.home-page .box h2 {
+    font-size: 22px;
+    margin: 0 0 16px;
+}
+
+.home-page .box p {
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.home-page .box p:last-child {
+    margin-bottom: 0;
+}
+
+.home-page .box a {
+    color: #424866;
+}
+
+@media (max-width: 375px) {
+    .home-page {
+        padding: 20px 15px 40px;
+    }
+
+    .home-page h1 {
+        font-size: 30px;
+    }
+
+    .home-page .box {
+        padding: 18px;
+    }
+}

@@ -1,0 +1,104 @@
+body:has(.find-page) {
+    background-color: #E3E6F2;
+}
+
+.find-page {
+    max-width: 480px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    font-family: Arial, sans-serif;
+    color: #292B3E;
+}
+
+.find-page * {
+    box-sizing: border-box;
+}
+
+.find-page h1 {
+    font-size: 36px;
+    font-weight: 500;
+    margin: 0 0 30px;
+}
+
+.find-form-box,
+.find-page article {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.find-form-box label,
+.find-page article label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.find-form-box select,
+.find-form-box input,
+.find-page article select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    color: #292B3E;
+    background-color: #FAFAFF;
+    border: 1px solid #C9CDDF;
+    border-radius: 6px;
+}
+
+.find-page button {
+    margin-top: 16px;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px;
+    background-color: #73799E;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.find-page button:hover {
+    background-color: #595F86;
+}
+
+.find-page article h2 {
+    font-size: 22px;
+    margin: 0 0 16px;
+}
+
+.find-page article {
+    width: 100%;
+    margin: 0 0 24px;
+    padding: 22px;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    background-color: #F1F2FA;
+}
+
+.find-page article p {
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.find-page a {
+    color: #424866;
+}
+
+@media (max-width: 375px) {
+    .find-page {
+        padding: 20px 15px 40px;
+    }
+
+    .find-page h1 {
+        font-size: 30px;
+    }
+
+    .find-page article {
+        padding: 18px;
+    }
+}
