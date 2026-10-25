@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 
 {% block container %}
-<h1>{{ run.name}}</h1>
-<p>date: {{document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC</p>
-<p>difficulty: {{ document.difficulty_rating or 'Not rated' }}</p>
-<p>notes: {{document.notes or 'No notes' }}</p>
+<div class="history-page">
+    <h1>{{ run.name }}</h1>
 
-<p><a href="{{ url_for('edit_attempt', attempt_id=document._id) }}">Edit</a></p>
-<p><a href="{{ url_for('run_details', run_id=run._id) }}">Back to run</a></p>
+    <article class="history-card">
+        <p>Date: {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC</p>
+        <p>Difficulty: {{ document.difficulty_rating or 'Not rated' }}</p>
+        <p>Notes: {{ document.notes or 'No notes' }}</p>
+        <p><a href="{{ url_for('edit_attempt', attempt_id=document._id) }}">Edit</a></p>
+        <p><a href="{{ url_for('run_details', run_id=run._id) }}">Back to run</a></p>
+    </article>
+</div>
 {% endblock %}
