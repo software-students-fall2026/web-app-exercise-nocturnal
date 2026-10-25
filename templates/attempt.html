@@ -73,6 +73,10 @@
   </form>
 {% endif %}
 
+{% if document._id %}
+  <p><a href="{{ url_for('attempt', attempt_id=document._id) }}">Cancel</a></p>
+{% endif %}
+
 <p>
   <a href="{{ url_for('run_details', run_id=run._id) }}">Back to run</a>
 </p>
