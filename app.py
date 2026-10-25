@@ -63,23 +63,30 @@ def create_app():
         return document
 
     def attempt_form(run_id):
-        """read the date, difficulty, and notes."""
+        """Read the date, difficulty, notes, and completion status."""
 
         try:
-            # grabbed this from https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
             skied_at = datetime.datetime.fromisoformat(request.form["skied_at"])
-        except ValueError:
+        except (ValueError, KeyError):
             abort(400, "Enter a valid date and time.")
 
         difficulty = request.form.get("difficulty_rating") or None
+
         if difficulty is not None and difficulty not in DIFFICULTIES:
             abort(400, "Choose an OpenStreetMap difficulty category.")
+
+        # Read and validate the completion status
+        completed = request.form.get("completed")
+
+        if completed not in ("yes", "no"):
+            abort(400, "Please indicate whether you completed the run.")
 
         return {
             "run_id": run_id,
             "skied_at": skied_at,
             "difficulty_rating": difficulty,
             "notes": request.form.get("notes", "").strip(),
+            "completed": completed == "yes",
         }
 
     def attach_community_ratings(runs):
@@ -359,16 +366,71 @@ def create_app():
 
         return redirect(url_for("attempt", attempt_id=attempt_id))
 
+    
     @app.route("/history")
     def history():
-        """show past attempts."""
+        """Show past attempts, optionally filtered by resort and date."""
 
-        documents = list(database.attempts.find({}).sort("skied_at", -1))
+        # Read filter values from the URL
+        resort_id = request.args.get("resort_id", "").strip()
+        selected_date = request.args.get("date", "").strip()
+
+        # Init with no filters
+        query = {}
+
+        # Filter by resort
+        if resort_id:
+            if not ObjectId.is_valid(resort_id):
+                abort(400, "Invalid resort.")
+
+            runs = database.runs.find(
+                {"resort_id": ObjectId(resort_id)},
+                {"_id": 1}
+            )
+
+            run_ids = [run["_id"] for run in runs]
+            query["run_id"] = {"$in": run_ids}
+
+        # Filter by date
+        if selected_date:
+            try:
+                date = datetime.date.fromisoformat(selected_date)
+            except ValueError:
+                abort(400, "Invalid date.")
+
+            start = datetime.datetime.combine(
+                date, datetime.time.min
+            )
+            end = start + datetime.timedelta(days=1)
+
+            query["skied_at"] = {
+                "$gte": start,
+                "$lt": end
+            }
+
+        # Retrieve matching attempts, newest first
+        documents = list(
+            database.attempts.find(query).sort("skied_at", -1)
+        )
 
         for document in documents:
-            document["run"] = database.runs.find_one({"_id": document["run_id"]})
+            document["run"] = database.runs.find_one(
+                {"_id": document["run_id"]}
+            )
 
-        return render_template("history.html", documents=documents)
+        # Retrieve resorts for the dropdown
+        resorts = list(
+            database.resorts.find().sort("name", 1)
+        )
+
+        return render_template(
+            "history.html",
+            documents=documents,
+            resorts=resorts,
+            selected_resort_id=resort_id,
+            selected_date=selected_date
+        )
+
 
     @app.route("/attempt/<attempt_id>")
     def attempt(attempt_id):
