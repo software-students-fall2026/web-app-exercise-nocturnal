@@ -1,0 +1,149 @@
+
+/* Attempt page background */
+body:has(.attempt-page) {
+    background-color: #E3E6F2;
+}
+
+/* Main page layout */
+.attempt-page {
+    max-width: 760px;
+    margin: 32px auto;
+    padding: 24px;
+    color: #363B59;
+}
+
+.attempt-page h1 {
+    color: #363B59;
+    margin-bottom: 8px;
+}
+
+.attempt-page > p:first-of-type {
+    color: #626985;
+    margin-bottom: 24px;
+}
+
+/* Main attempt form card */
+.attempt-page > form:first-of-type {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 3px 10px rgba(60, 65, 100, 0.06);
+}
+
+/* Form spacing and labels */
+.attempt-page form p {
+    margin-bottom: 20px;
+}
+
+.attempt-page form p > label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Date, difficulty, and notes fields */
+.attempt-page input[type="datetime-local"],
+.attempt-page select,
+.attempt-page textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    background-color: #FAFAFF;
+    color: #363B59;
+    font: inherit;
+}
+
+.attempt-page textarea {
+    resize: vertical;
+}
+
+.attempt-page input:focus,
+.attempt-page select:focus,
+.attempt-page textarea:focus {
+    outline: 2px solid #73799E;
+    outline-offset: 2px;
+}
+
+/* Completion Yes / No section */
+.attempt-page fieldset {
+    border: 1px solid #D6DAEA;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.attempt-page legend {
+    font-weight: 600;
+    padding: 0 8px;
+}
+
+.attempt-page fieldset label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 24px;
+    cursor: pointer;
+}
+
+.attempt-page input[type="radio"] {
+    accent-color: #73799E;
+}
+
+/* Save button */
+.attempt-page button {
+    background-color: #73799E;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 20px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.attempt-page button:hover {
+    background-color: #606689;
+}
+
+/* Delete button */
+.attempt-page > form:nth-of-type(2) {
+    margin-top: 16px;
+}
+
+.attempt-page > form:nth-of-type(2) button {
+    background-color: #B46E78;
+}
+
+.attempt-page > form:nth-of-type(2) button:hover {
+    background-color: #965862;
+}
+
+/* Cancel and Back to run links */
+.attempt-page > p {
+    margin-top: 16px;
+}
+
+.attempt-page > p a {
+    color: #595F88;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.attempt-page > p a:hover {
+    text-decoration: underline;
+}
+
+/* Smaller screen adjustments */
+@media (max-width: 600px) {
+    .attempt-page {
+        padding: 16px;
+        margin: 16px auto;
+    }
+
+    .attempt-page > form:first-of-type {
+        padding: 18px;
+    }
+}
