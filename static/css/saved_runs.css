@@ -1,0 +1,175 @@
+/* Someday, Today, delete run confirmation styling */
+
+body:has(.saved_runs-page) {
+    background-color: #E3E6F2;
+}
+
+.saved_runs-page {
+    max-width: 480px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    font-family: Arial, sans-serif;
+    color: #292B3E;
+}
+
+.saved_runs-page * {
+    box-sizing: border-box;
+}
+
+/* Page title */
+
+.saved_runs-page h1 {
+    font-size: 36px;
+    font-weight: 500;
+    margin: 0 0 30px;
+}
+
+/* Search and Filters */
+
+.saved_runs-filters {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.saved_runs-filters p {
+    margin: 0 0 16px;
+}
+
+.saved_runs-filters input[type="text"],
+.saved_runs-filters select {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    color: #292B3E;
+    background-color: #FAFAFF;
+    border: 1px solid #C9CDDF;
+    border-radius: 6px;
+}
+
+/* Buttons */
+.saved_runs-page button {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px;
+    background-color: #73799E;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.saved_runs-page button:hover {
+    background-color: #595F86;
+}
+
+.saved_runs-page button.resetb{
+    background-color: #493f3f
+}
+
+.saved_runs-page button.resetb:hover {
+    background-color: #595F86;
+}
+
+.saved_runs-page button.removeb {
+    background-color: lightpink;
+}
+
+.saved_runs-page button.removeb:hover {
+    background-color: salmon;
+}
+
+/* Someday & Today cards */
+
+.saved_runs-card {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.saved_runs-card h2 {
+    font-size: 22px;
+    margin: 0 0 16px;
+}
+
+.saved_runs-card h2 a {
+    color: #292B3E;
+    text-decoration: none;
+}
+
+.saved_runs-card p {
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.saved_runs-card p:last-child {
+    margin-bottom: 0;
+}
+
+.saved_runs-card a {
+    color: #424866;
+}
+
+/* Empty List */
+
+.saved_runs-empty {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}
+
+/* Confirm delete page */
+
+.confirm-card{
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.confirm-card p{
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.confirm-card button.removeb {
+    background-color: lightpink;
+}
+
+.confirm-card button.removeb:hover {
+    background-color: salmon;
+}
+/* Keyboard focus */
+
+.saved_runs-page a:focus-visible,
+.saved_runs-page button:focus-visible,
+.saved_runs input:focus-visible,
+.saved_runs select:focus-visible {
+    outline: 3px solid #595F86;
+    outline-offset: 3px;
+}
+
+/* Small mobile screens */
+
+@media (max-width: 375px) {
+    .saved_runs-page {
+        padding: 20px 15px 40px;
+    }
+
+    .saved_runs-page h1 {
+        font-size: 30px;
+    }
+
+    .saved_runs-card {
+        padding: 18px;
+    }
+}
