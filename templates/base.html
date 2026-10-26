@@ -5,11 +5,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block styles %}{% endblock %}    
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Stoked</title>
+    <title>Ski-Oked</title>
   </head>
   <body>
     <header class="site-header">
-      <a class="site-brand" href="{{ url_for('show_home') }}">Stoked</a>
+      <a class="site-brand" href="{{ url_for('show_home') }}">Ski-Oked</a>
       {% if current_user.is_authenticated %}
         <details class="site-menu">
           <summary aria-label="Open navigation">
