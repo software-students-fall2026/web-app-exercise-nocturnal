@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block container %}
+<section class="find-page">
+  <h1>Community ratings</h1>
+  {% for doc in docs %}
+    {% include '_run_card.html' %}
+  {% else %}
+    <p>No community ratings yet.</p>
+    <a class="button" href="{{ url_for('show_countries') }}">Find a run to rate</a>
+  {% endfor %}
+</section>
+{% endblock %}

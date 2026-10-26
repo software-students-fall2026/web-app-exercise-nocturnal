@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block container %}
+<section class="find-page">
+  <h1>{{ resort.name }}</h1>
+  {% if resort.region %}<p>{{ resort.region }}</p>{% endif %}
+  <p>{{ resort.country_name }}</p>
+  {% if resort.image %}
+    <img class="resort-photo" src="{{ url_for('static', filename=resort.image.path) }}" alt="{{ resort.image.alt }}">
+  {% endif %}
+  <form class="find-form-box" method="GET">
+    <label for="search">Search these runs</label>
+    <input id="search" name="search" value="{{ search }}" maxlength="100" placeholder="Run name">
+    <button type="submit">Search</button>
+  </form>
+  {% for doc in docs %}
+    {% include '_run_card.html' %}
+  {% else %}
+    <p>No runs match your search.</p>
+  {% endfor %}
+</section>
+{% endblock %}

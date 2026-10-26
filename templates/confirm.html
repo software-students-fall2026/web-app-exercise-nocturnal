@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block container %}
+<div class="saved_runs-page">
+    <h1>{{ title }}</h1>
+    <div class="confirm-card">
+    <p>{{ message }}</p>
+    <form method="GET" action="{{ cancel }}">
+        <button type="submit">Cancel</button> 
+    </form>
+    <form method="POST" action="{{ action }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="removeb">{{ button }}</button>
+    </form>
+    </div>
+</div>
+{% endblock %}

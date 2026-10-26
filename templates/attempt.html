@@ -1,94 +1,49 @@
-
 {% extends 'base.html' %}
-
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
-{% endblock %}
-
 {% block container %}
 <div class="history-page">
-  <h1>{{ 'Edit attempt' if document._id else 'Log attempt' }}</h1>
+  <h1>{{ 'Edit attempt' if doc._id else 'Log an attempt' }}</h1>
   <p>{{ run.name }}</p>
-
-  <form class="history-filters" action="{{ url_for('attempt_post', attempt_id=document._id) if document._id else url_for('log_attempt_post', run_id=run._id) }}" method="POST" enctype="multipart/form-data">
+  <form class="history-filters find-form-box" action="{{ action }}" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <p>
-      <label for="skied_at">Date (UTC)</label>
-      <input
-        id="skied_at"
-        name="skied_at"
-        type="datetime-local"
-        value="{{ document.skied_at.strftime('%Y-%m-%dT%H:%M') }}"
-        required
-      >
+      <label for="skied_at">Date skied</label>
+      <input id="skied_at" name="skied_at" type="date" value="{{ doc.skied_at.strftime('%Y-%m-%d') }}" required >
     </p>
-
     <fieldset>
       <legend>Did you complete this run?</legend>
-
-      <label for="completed_yes">
-        <input
-          type="radio"
-          id="completed_yes"
-          name="completed"
-          value="yes"
-          {% if document.completed is sameas true %}checked{% endif %}
-          required
-        >
+      <label class="choice" for="completed_yes">
+        <input type="radio" id="completed_yes" name="completed" value="yes" {% if doc.completed is sameas true %}checked{% endif %} required >
         Yes
       </label>
-
-      <label for="completed_no">
-        <input
-          type="radio"
-          id="completed_no"
-          name="completed"
-          value="no"
-          {% if document.completed is sameas false %}checked{% endif %}
-          required
-        >
-        No
+      <label class="choice" for="completed_no">
+        <input type="radio" id="completed_no" name="completed" value="no" {% if doc.completed is sameas false %}checked{% endif %} required >
+        Not this time
       </label>
     </fieldset>
-
+    <p>1 = very easy; 5 = very difficult.</p>
+    <p>Rating updates your community vote; no rating keeps your previous vote.</p>
+    <fieldset class="rating">
+      <legend>Your difficulty (optional)</legend>
+      <label><input type="radio" name="difficulty" value="" {% if not doc.get('difficulty') %}checked{% endif %}>No rating</label>
+      {% for value in range(1, 6) %}
+        <label>
+          <input type="radio" name="difficulty" value="{{ value }}" aria-label="{{ value }} out of 5" {% if doc.get('difficulty') == value %}checked{% endif %}>
+          <span aria-hidden="true">{{ '*' * value }}</span>
+        </label>
+      {% endfor %}
+    </fieldset>
     <p>
-      <label for="difficulty_rating">Difficulty</label>
-      <select id="difficulty_rating" name="difficulty_rating">
-        <option value="">Not rated</option>
-        {% for category in difficulties %}
-          <option value="{{ category }}"
-            {% if document.difficulty_rating == category %}selected{% endif %}>
-            {{ category }}
-          </option>
-        {% endfor %}
-      </select>
+      <label for="notes">Notes (optional)</label>
+      <textarea id="notes" name="notes" rows="4" maxlength="2000">{{ doc.notes }}</textarea>
     </p>
-
     <p>
-      <label for="notes">Notes</label>
-      <textarea id="notes" name="notes" rows="4" cols="25">{{ document.notes }}</textarea>
-    </p>
-
-    <p>
-      <label for="photo">Photo</label>
+      <label for="photo">Photo (optional)</label>
       <input id="photo" name="photo" type="file" accept="image/jpeg,image/png">
     </p>
-
-    <button type="submit">Save</button>
+    <div class="actions">
+      <button class="primary" type="submit">Save attempt</button>
+      <a class="button" href="{{ url_for('show_attempt_details', attempt_id=doc._id) if doc._id else url_for('show_run_details', run_id=run._id) }}">Cancel</a>
+    </div>
   </form>
-
-  {% if document._id %}
-    <form class="history-filters" action="{{ url_for('delete_attempt_post', attempt_id=document._id) }}" method="POST"
-      onsubmit="return confirm('Delete this attempt?');">
-      <button type="submit">Delete</button>
-    </form>
-  {% endif %}
-
-  {% if document._id %}
-    <p><a href="{{ url_for('attempt', attempt_id=document._id) }}">Cancel</a></p>
-  {% endif %}
-
-  <p>
-    <a href="{{ url_for('run_details', run_id=run._id) }}">Back to run</a>
-  </p>
 </div>
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block container %}
+<section class="find-page">
+  <h1>Resorts in {{ country.country_name }}</h1>
+  <form class="find-form-box" method="GET">
+    <label for="resort">Resort</label>
+    <select id="resort" name="resort_id" required>
+      <option value="">Choose a resort</option>
+      {% for doc in docs %}
+        <option value="{{ doc._id }}">{{ doc.name }} {% if doc.region %}({{ doc.region }}){% endif %}</option>
+      {% endfor %}
+    </select>
+    <button class="primary" type="submit">Show runs</button>
+  </form>
+</section>
+{% endblock %}

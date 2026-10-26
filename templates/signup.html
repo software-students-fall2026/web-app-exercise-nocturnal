@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block container %}
+<section class="find-page">
+  <h1>Create an account</h1>
+  <form class="find-form-box" method="POST" action="{{ url_for('create_account') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="display_name">Display name</label>
+    <input id="display_name" name="display_name" maxlength="80" autocomplete="nickname" value="{{ request.form.get('display_name', '') }}" required>
+    <label for="email">Email</label>
+    <input id="email" name="email" type="email" maxlength="254" autocomplete="email" value="{{ request.form.get('email', '') }}" required>
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+    <p class="muted">12–128 characters. No password recovery.</p>
+    <button class="primary" type="submit">Create account</button>
+  </form>
+  <p>
+    Already have an account? <a href="{{ url_for('show_login_form') }}">Log in</a>.
+  </p>
+</section>
+{% endblock %}

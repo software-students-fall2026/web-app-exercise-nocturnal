@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block container %}
-<h1>Something went wrong</h1>
-<p>{{ message }}</p>
-<p><a href="{{ url_for('home') }}">Return home</a></p>
+<section class="find-page">
+  <h1>unable to complete request</h1>
+  <p>{{ message }}</p>
+  <a class="button" href="{{ url_for('show_home') }}">Home</a>
+</section>
 {% endblock %}

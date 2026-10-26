@@ -1,85 +1,60 @@
 {% extends 'base.html' %}
-
-{% block styles %} 
-<!-- Someday, Today, comfirmation page -->
-<link rel="stylesheet" href="{{ url_for('static', filename='css/saved_runs.css') }}">
-{% endblock %}
-
 {% block container %}
 <div class="saved_runs-page">
-    <h1>{{ title }}</h1>
-
+    <h1>{{ destination|capitalize }}</h1>
+  {# removed for final consolidation: filters from main
   {% if title == 'Someday' %}
     <div class="saved_runs-filters">
       <form method="GET" action="{{url_for('someday')}}">
         <input type="text" name="name" placeholder="Search Run" value="{{ name }}">
-        
         <select name="difficulty">
-          <option value=""> Any Difficulty</option>
+          <option value="">Any Difficulty</option>
           {% for d in difficulties %}
-          <option value="{{ d }}" {% if difficulty == d %} selected {% endif %}> {{ d }}</option>
+          <option value="{{ d }}" {% if difficulty == d %} selected {% endif %}>{{ d }}</option>
           {% endfor %}
         </select>
-
         <select name="state">
-          <option value=""> Any State </option>
+          <option value="">Any State</option>
           {% for s in states %}
-          <option value="{{ s }}" {% if state==s %} selected {% endif %}> {{ s }}</option>
+          <option value="{{ s }}" {% if state==s %} selected {% endif %}>{{ s }}</option>
           {% endfor %}
         </select>
-
         <button type="submit">Show Runs</button>
       </form>
-
       <form method="GET" action="{{url_for('someday')}}">
         <button type="submit" class="resetb">Reset To All</button>
       </form>
     </div>
   {% endif %}
-
   <p><a href="{{ url_for('find_runs') }}">Find a run</a></p>
-  
-  {% for document in documents %}
+  #}
+  {% for doc in docs %}
     <article class="saved_runs-card">
-      {% if document.run %}
-        <h2><a href="{{ url_for('run_details', run_id=document.run._id) }}">{{ document.run.name }}</a></h2>
-        
-        {% if document.resort %}
-          <p>{{document.resort.name}}, {{document.resort.state}}</p>
+      <h2><a href="{{ url_for('show_run_details', run_id=doc._id) }}">{{ doc.name }}</a></h2>
+      <p>{{ resorts[doc.resort_id].name }}</p>
+      <p>{{ resorts[doc.resort_id].country_name }}</p>
+      <p>Difficulty: {{ doc.difficulty|difficulty_label }}</p>
+      <p>Saved {{ saved[doc._id].created_at.strftime('%d %b %Y') }}</p>
+      <p>{{ attempts[doc._id].count if doc._id in attempts else 0 }} {{ 'attempt' if doc._id in attempts and attempts[doc._id].count == 1 else 'attempts' }}</p>
+      {% if doc._id in attempts %}<p>Latest attempt: {{ attempts[doc._id].latest.strftime('%d %b %Y') }}</p>{% endif %}
+      <div class="actions">
+        {% if destination == 'today' %}
+          <form action="{{ url_for('show_new_attempt_form', run_id=doc._id) }}" method="GET">
+            <button type="submit">Log attempt</button>
+          </form>
+        {% else %}
+          <form action="{{ url_for('save_run_to_list', run_id=doc._id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button name="destination" value="today" type="submit">Add to Today</button>
+          </form>
         {% endif %}
-        {% if document.run.difficulty %}
-          <p>Difficulty: {{document.run.difficulty}}</p>
-        {% endif %}
-        {% if document.created_at %}
-          <p>{% if title == 'Today' %} 
-            Added To Today {% else %} Saved {% endif %}: {{document.created_at.strftime("%d %B %Y")}}</p>
-        {% endif %}
-        <p>Attempts: {{document.attempt_count}}</p>
-        {% for attempt in document.latest_attempt %}
-          <p>Last Skied: {{attempt.skied_at.strftime("%d %B %Y")}}</p>
-        {% endfor %}
-        
-        <form action="{{ url_for('log_attempt', run_id=document.run._id) }}" method="GET">
-          <button type="submit">Log attempt</button>
-        </form>
-    
-      {% else %}
-        <p>Run unavailable.</p>
-      {% endif %}
-    
-      {% if document.run and title == 'Someday' %}
-        <form action="{{ url_for('save_run_post', run_id=document.run._id) }}" method="POST">
-          <button name="destination" value="today" type="submit">Add to Today</button>
-        </form>
-      {% endif %}
-
-        <form action="{{ url_for('confirm_delete_saved', saved_id=document._id) }}" method="GET">
+        <form action="{{ url_for('confirm_saved_run_removal', run_id=doc._id, destination=destination) }}" method="GET">
           <button type="submit" class="removeb">Remove</button>
         </form>
+      </div>
     </article>
   {% else %}
-    <p class="saved_runs-empty">No saved runs.</p>
+    <p class="saved_runs-empty">No saved runs yet.</p>
   {% endfor %}
-
 </div>
 {% endblock %}

@@ -1,0 +1,9 @@
+{# shared by run search and community ratings #}
+<article>
+  <h2><a href="{{ url_for('show_run_details', run_id=doc._id) }}">{{ doc.name }}</a></h2>
+  <p>Difficulty: {{ doc.difficulty|difficulty_label }}</p>
+  {% if resorts is defined %}
+    <p>{{ resorts[doc.resort_id].name }}</p>
+    <p>{{ resorts[doc.resort_id].country_name }}</p>
+  {% endif %}
+</article>
