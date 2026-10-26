@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+<!-- Someday, Today, comfirmation page -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/saved_runs.css') }}">
+{% endblock %}
+
 {% block container %}
 <div class="saved_runs-page">
     <h1>Remove run?</h1>
