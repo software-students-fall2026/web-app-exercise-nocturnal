@@ -1,24 +1,28 @@
-
 {% extends 'base.html' %}
 
-<<<<<<< Updated upstream
 {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/attempt.css') }}">
 {% endblock %}
 
 {% block container %}
-<div class="history-page">
+<div class="attempt-page">
+
   <h1>{{ 'Edit attempt' if document._id else 'Log attempt' }}</h1>
   <p>{{ run.name }}</p>
 
-  <form class="history-filters" action="{{ url_for('attempt_post', attempt_id=document._id) if document._id else url_for('log_attempt_post', run_id=run._id) }}" method="POST" enctype="multipart/form-data">
+  <form
+    action="{{ url_for('attempt_post', attempt_id=document._id) if document._id else url_for('log_attempt_post', run_id=run._id) }}"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+
     <p>
       <label for="skied_at">Date (UTC)</label>
       <input
         id="skied_at"
         name="skied_at"
         type="datetime-local"
-        value="{{ document.skied_at.strftime('%Y-%m-%dT%H:%M') }}"
+        value="{{ document.skied_at.strftime('%Y-%m-%dT%H:%M') if document.skied_at else '' }}"
         required
       >
     </p>
@@ -56,8 +60,10 @@
       <select id="difficulty_rating" name="difficulty_rating">
         <option value="">Not rated</option>
         {% for category in difficulties %}
-          <option value="{{ category }}"
-            {% if document.difficulty_rating == category %}selected{% endif %}>
+          <option
+            value="{{ category }}"
+            {% if document.difficulty_rating == category %}selected{% endif %}
+          >
             {{ category }}
           </option>
         {% endfor %}
@@ -66,113 +72,45 @@
 
     <p>
       <label for="notes">Notes</label>
-      <textarea id="notes" name="notes" rows="4" cols="25">{{ document.notes }}</textarea>
+      <textarea
+        id="notes"
+        name="notes"
+        rows="4"
+        cols="25"
+      >{{ document.notes or '' }}</textarea>
     </p>
 
     <p>
       <label for="photo">Photo</label>
-      <input id="photo" name="photo" type="file" accept="image/jpeg,image/png">
+      <input
+        id="photo"
+        name="photo"
+        type="file"
+        accept="image/jpeg,image/png"
+      >
     </p>
 
     <button type="submit">Save</button>
+
   </form>
 
   {% if document._id %}
-    <form class="history-filters" action="{{ url_for('delete_attempt_post', attempt_id=document._id) }}" method="POST"
-      onsubmit="return confirm('Delete this attempt?');">
+    <form
+      action="{{ url_for('delete_attempt_post', attempt_id=document._id) }}"
+      method="POST"
+      onsubmit="return confirm('Delete this attempt?');"
+    >
       <button type="submit">Delete</button>
     </form>
-  {% endif %}
 
-  {% if document._id %}
-    <p><a href="{{ url_for('attempt', attempt_id=document._id) }}">Cancel</a></p>
+    <p>
+      <a href="{{ url_for('attempt', attempt_id=document._id) }}">Cancel</a>
+    </p>
   {% endif %}
 
   <p>
     <a href="{{ url_for('run_details', run_id=run._id) }}">Back to run</a>
   </p>
-=======
-{% block container %}
-<div class="attempt-page">
-<h1>{{ 'Edit attempt' if document._id else 'Log attempt' }}</h1>
-<p>{{ run.name }}</p>
 
-<form action="{{ url_for('attempt_post', attempt_id=document._id) if document._id else url_for('log_attempt_post', run_id=run._id) }}" method="POST">
-
-  <p>
-    <label for="skied_at">Date (UTC)</label>
-    <input
-      id="skied_at"
-      name="skied_at"
-      type="datetime-local"
-      value="{{ document.skied_at.strftime('%Y-%m-%dT%H:%M') }}"
-      required
-    >
-  </p>
-
-  <fieldset>
-    <legend>Did you complete this run?</legend>
-
-    <label for="completed_yes">
-      <input
-        type="radio"
-        id="completed_yes"
-        name="completed"
-        value="yes"
-        {% if document.completed is sameas true %}checked{% endif %}
-        required
-      >
-      Yes
-    </label>
-
-    <label for="completed_no">
-      <input
-        type="radio"
-        id="completed_no"
-        name="completed"
-        value="no"
-        {% if document.completed is sameas false %}checked{% endif %}
-        required
-      >
-      No
-    </label>
-  </fieldset>
-
-  <p>
-    <label for="difficulty_rating">Difficulty</label>
-    <select id="difficulty_rating" name="difficulty_rating">
-      <option value="">Not rated</option>
-      {% for category in difficulties %}
-        <option value="{{ category }}"
-          {% if document.difficulty_rating == category %}selected{% endif %}>
-          {{ category }}
-        </option>
-      {% endfor %}
-    </select>
-  </p>
-
-  <p>
-    <label for="notes">Notes</label>
-    <textarea id="notes" name="notes" rows="4" cols="25">{{ document.notes }}</textarea>
-  </p>
-
-  <button type="submit">Save</button>
-</form>
-
-{% if document._id %}
-  <form action="{{ url_for('delete_attempt_post', attempt_id=document._id) }}" method="POST"
-    onsubmit="return confirm('Delete this attempt?');">
-    <button type="submit">Delete</button>
-  </form>
-{% endif %}
-
-{% if document._id %}
-  <p><a href="{{ url_for('attempt', attempt_id=document._id) }}">Cancel</a></p>
-{% endif %}
-
-<p>
-  <a href="{{ url_for('run_details', run_id=run._id) }}">Back to run</a>
-</p>
->>>>>>> Stashed changes
 </div>
 {% endblock %}
