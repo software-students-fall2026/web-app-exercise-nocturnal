@@ -1,7 +1,3 @@
-body:has(.find-page) {
-    background-color: #E3E6F2;
-}
-
 .find-page {
     box-sizing: border-box;
     max-width: 720px;
