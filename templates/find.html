@@ -38,7 +38,6 @@
       <input id="name" name="name" value="{{ name }}">
     </p>
     <button type="submit">Show runs</button>
-    <a href="{{ url_for('find_runs', state=state, resort_id=selected._id if selected else '') }}">Clear</a>
   </form>
 {% elif state %}
   <p>No resorts.</p>
