@@ -14,6 +14,37 @@ A little exercise to build a web application following an agile development proc
 
 A mobile web app for skiers to keep track of the runs they're dreaming about, discover new runs, and celebrate the day they finally ride them.
 
+## About our app
+
+Ski-Oked allows users to plan what they want to ski, track each of their ski attempts, and look back on their ski history. Each user's account is only able to view and edit its own runs and attempts. 
+
+### Features
+
+- Sign up, log in, and edit display name through the profile page
+- Browse ski runs by country, resort, then run 
+- Save runs to the Today or Someday pages
+- Log an attempt with information such as the date, completion status, difficulty, optional notes, and uploaded photo
+- Edit or delete attempts in the History page
+- See Ski-Oked average difficulty ratings for runs 
+
+### How we made the app
+
+- **Flask**
+- **MongoDB**
+- setup/setup.py loads the ski catalog into an empty database and starts the app
+- user-uploaded photos are saved in static/uploads/ on the local computer
+
+### Data
+
+| collection | fields |
+|---|---|
+| `users` | `_id`, `email` (unique), `password_hash`, `display_name` |
+| `resorts` | `_id`, `name`, `country_code`, `country_name`, `region`, `image` |
+| `runs` | `_id`, `resort_id`, `name`, `difficulty` (1–5), `description` |
+| `saved_runs` | `user_id`, `run_id`, `list` (`today` or `someday`), `created_at` |
+| `attempts` | `_id`, `user_id`, `run_id`, `skied_at`, `completed`, `notes`, `difficulty` (1–5, optional), `photo` (optional) |
+| `ratings` | `_id`, `user_id`, `run_id`, `difficulty` (1–5), one per user per run |
+
 ## User stories
 
 [Link to user stories](https://github.com/software-students-fall2026/web-app-exercise-nocturnal/issues)
