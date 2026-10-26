@@ -1,6 +1,10 @@
 
 {% extends 'base.html' %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
+
 {% block container %}
 <div class="history-page">
   <h1>{{ 'Edit attempt' if document._id else 'Log attempt' }}</h1>
