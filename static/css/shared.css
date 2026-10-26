@@ -3,7 +3,8 @@ body:has(.find-page) {
 }
 
 .find-page {
-    max-width: 480px;
+    box-sizing: border-box;
+    max-width: 720px;
     min-height: 100vh;
     margin: 0 auto;
     padding: 24px 20px 60px;
@@ -87,6 +88,11 @@ body:has(.find-page) {
 
 .find-page a {
     color: #424866;
+}
+
+.find-page :is(a, button, input, select):focus-visible {
+    outline: 3px solid #595F86;
+    outline-offset: 3px;
 }
 
 @media (max-width: 375px) {
