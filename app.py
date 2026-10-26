@@ -1,4 +1,4 @@
-"""set up stoked."""
+"""set up Ski-Oked."""
 
 # citations — heavily used for reference:
 # https://github.com/nyu-software-engineering/flask-pymongo-web-app-example
