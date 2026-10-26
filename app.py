@@ -66,6 +66,10 @@ def create_app():
 
         return document
 
+    """
+    Validate and process submitted attempt data, including the date,
+    completion status, difficulty rating, and personal notes.
+    """
     def attempt_form(run_id):
         """Read the date, difficulty, notes, and completion status."""
 
@@ -398,7 +402,10 @@ def create_app():
 
     @app.route("/run/<run_id>/log", methods=["POST"])
     def log_attempt_post(run_id):
-        """save a new attempt."""
+        """
+        Handle the submission of a new skiing attempt and save
+        the attempt information to MongoDB.
+        """
 
         run = find_document(database.runs, run_id)
         document = attempt_form(run["_id"])
@@ -408,7 +415,11 @@ def create_app():
 
     @app.route("/history")
     def history():
-        """Show past attempts, optionally filtered by resort and date."""
+        """
+        Retrieve previously logged skiing attempts from MongoDB,
+        apply optional resort and date filters, and display
+        the results in reversed chronological order.
+        """
 
         # Read filter values from the URL
         resort_id = request.args.get("resort_id", "").strip()
@@ -493,7 +504,9 @@ def create_app():
 
     @app.route("/attempt/<attempt_id>/delete", methods=["POST"])
     def delete_attempt_post(attempt_id):
-        """delete an attempt."""
+        """
+        Delete a selected skiing attempt from MongoDB.
+        """
 
         document = find_document(database.attempts, attempt_id)
         database.attempts.delete_one({"_id": document["_id"]})
