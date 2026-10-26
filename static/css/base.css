@@ -64,3 +64,17 @@
         padding: 12px 15px;
     }
 }
+
+footer {
+    box-sizing: border-box;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px;
+    font: 14px/1.5 Arial, sans-serif;
+    color: #424866;
+    text-align: center;
+}
+
+footer p {
+    margin: 4px 0;
+}
