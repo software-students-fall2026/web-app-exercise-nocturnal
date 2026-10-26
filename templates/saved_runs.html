@@ -59,7 +59,9 @@
           <p>Last Skied: {{attempt.skied_at.strftime("%d %B %Y")}}</p>
         {% endfor %}
         
-        <p><a href="{{ url_for('log_attempt', run_id=document.run._id) }}">Log attempt</a></p>
+        <form action="{{ url_for('log_attempt', run_id=document.run._id) }}" method="GET">
+          <button type="submit">Log attempt</button>
+        </form>
     
       {% else %}
         <p>Run unavailable.</p>
