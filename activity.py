@@ -187,10 +187,7 @@ def register_activity_routes(app, db):
             )
 
     def read_attempt_form():
-        """
-        Validate and process submitted attempt data, including the date,
-        completion status, difficulty rating, and personal notes.
-        """
+        """read the attempt fields."""
         # 1) check the form fields
         try:
             skied_at = datetime.datetime.strptime(request.form["skied_at"], "%Y-%m-%d")
