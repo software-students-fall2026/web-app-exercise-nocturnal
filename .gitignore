@@ -151,3 +151,5 @@ cython_debug/
 atlas-credentials.env
 *.geojson
 static/uploads/
+
+/static/uploads/

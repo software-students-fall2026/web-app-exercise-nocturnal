@@ -1,26 +1,27 @@
 {% extends 'base.html' %}
-
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
-{% endblock %}
-
 {% block container %}
 <div class="history-page">
     <h1>{{ run.name }}</h1>
-
     <article class="history-card">
-        <p>Date: {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC</p>
-        <p>Difficulty: {{ document.difficulty_rating or 'Not rated' }}</p>
-        <p>Notes: {{ document.notes or 'No notes' }}</p>
-        {% if document.photo %}
-        <p><img src="{{ url_for('static', filename='uploads/' + document.photo) }}" width="300"></p>
+        <p>Date: {{ doc.skied_at.strftime('%d %b %Y') }}</p>
+        <p>{{ 'Completed' if doc.completed else 'Not completed' }}</p>
+        {% if doc.get('difficulty') %}<p>Your difficulty: {{ '*' * doc.difficulty }} ({{ doc.difficulty }}/5)</p>{% endif %}
+        <p class="notes">{{ doc.notes or 'No notes added.' }}</p>
+        {% if doc.photo %}
+        <p><img src="{{ url_for('static', filename='uploads/' + doc.photo) }}" width="300" alt="Photo from this attempt"></p>
         {% endif %}
-        <form action="{{ url_for('edit_attempt', attempt_id=document._id) }}" method="GET">
-            <button type="submit">Edit</button>
+        <form action="{{ url_for('show_edit_attempt_form', attempt_id=doc._id) }}" method="GET">
+            <button type="submit">Edit attempt</button>
         </form>
-        <form action="{{ url_for('run_details', run_id=run._id) }}" method="GET">
-            <button type="submit">Back to run</button>
+        <form action="{{ url_for('confirm_attempt_deletion', attempt_id=doc._id) }}" method="GET">
+            <button type="submit">Delete attempt</button>
         </form>
     </article>
+        <form action="{{ url_for('show_run_details', run_id=run._id) }}" method="GET">
+            <button type="submit">View run</button>
+        </form>
+        <form action="{{ url_for('show_attempt_history') }}" method="GET">
+            <button type="submit">Your history</button>
+        </form>
 </div>
 {% endblock %}

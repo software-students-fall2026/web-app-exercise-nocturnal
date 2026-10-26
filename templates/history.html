@@ -1,81 +1,38 @@
-
 {% extends 'base.html' %}
-
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
-{% endblock %}
-
 {% block container %}
 <div class="history-page">
-
-  <h1>Run History</h1>
-
-  <form class="history-filters" action="{{ url_for('history') }}" method="GET">
-
+  <h1>Your history</h1>
+  {# removed for final consolidation: filters from main
+  <form class="history-filters" action="{{ url_for('show_attempt_history') }}" method="GET">
     <p>
       <label for="resort_id">Filter by Resort</label>
       <select id="resort_id" name="resort_id">
         <option value="">All Resorts</option>
-
         {% for resort in resorts %}
-          <option value="{{ resort._id }}"
-            {% if (resort._id|string) == selected_resort_id %}selected{% endif %}>
-            {{ resort.name }}
-          </option>
+          <option value="{{ resort._id }}" {% if (resort._id|string) == selected_resort_id %}selected{% endif %}>{{ resort.name }}</option>
         {% endfor %}
       </select>
     </p>
-
     <p>
       <label for="date">Filter by Date</label>
-      <input
-        type="date"
-        id="date"
-        name="date"
-        value="{{ selected_date }}"
-      >
+      <input type="date" id="date" name="date" value="{{ selected_date }}" >
     </p>
-
     <button type="submit">Apply Filters</button>
-    <a href="{{ url_for('history') }}">Clear Filters</a>
-
+    <a href="{{ url_for('show_attempt_history') }}">Clear Filters</a>
   </form>
-
-  {% for document in documents %}
+  #}
+  {% for doc in docs %}
     <article class="history-card">
-
-      <h2>
-        <a href="{{ url_for('attempt', attempt_id=document._id) }}">
-          {{ document.run.name if document.run else 'Run unavailable' }}
-        </a>
-      </h2>
-
-      <p>
-        Date: {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC
-      </p>
-
-      <p>
-        {% if document.completed is sameas true %}
-          Completed: Yes
-        {% elif document.completed is sameas false %}
-          Completed: No
-        {% else %}
-          Completion not recorded
-        {% endif %}
-      </p>
-
-      <p>
-        Difficulty: {{ document.difficulty_rating or 'Not rated' }}
-      </p>
-
-      <form action="{{ url_for('attempt', attempt_id=document._id) }}" method="GET">
-        <button type="submit">View Reflection</button>
+      <h2><a href="{{ url_for('show_attempt_details', attempt_id=doc._id) }}">{{ runs[doc.run_id].name }}</a></h2>
+      <form action="{{ url_for('show_attempt_details', attempt_id=doc._id) }}" method="GET">
+        <button type="submit">View attempt</button>
       </form>
+      <p>Date: {{ doc.skied_at.strftime('%d %b %Y') }}</p>
+      <p>{{ 'Completed' if doc.completed else 'Not completed' }}</p>
 
     </article>
   {% else %}
-    <p class="history-empty">No attempts found.</p>
+    <p class="history-empty">No attempts recorded yet.</p>
   {% endfor %}
-
 </div>
 {% endblock %}

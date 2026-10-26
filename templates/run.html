@@ -1,43 +1,34 @@
 {% extends 'base.html' %}
-
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/shared.css') }}">
-{% endblock %}
-
 {% block container %}
 <section class="find-page">
-<h1>{{ document.name }}</h1>
+<h1>{{ doc.name }}</h1>
 <article>
-<p>resort: {{ resort.name if resort else 'Not available' }}</p>
-<p>state: {{ resort.state if resort else 'Not available' }}</p>
-{% for field in ('ref', 'description', 'difficulty', 'difficultyConvention', 'grooming', 'oneway', 'lit', 'gladed', 'patrolled', 'snowmaking') %}
-  {% if document.get(field) is not none %}
-    <p>{{ field }}: {{ document[field]|string|lower if document[field] is boolean else document[field] }}</p>
+<p><a href="{{ url_for('show_resort_runs', resort_id=resort._id) }}">{{ resort.name }}</a></p>
+<p>{{ resort.country_name }}</p>
+<p>Catalog difficulty: {{ doc.difficulty|difficulty_label }}</p>
+{% if doc.description %}<p>{{ doc.description }}</p>{% endif %}
+</article>
+<article>
+<div class="actions">
+{% for destination in ('someday', 'today') %}
+  {% if destination in saved %}
+    <span class="saved-label">Saved to {{ destination|capitalize }}</span>
+  {% else %}
+    <form action="{{ url_for('save_run_to_list', run_id=doc._id) }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button name="destination" value="{{ destination }}" type="submit">Add to {{ destination|capitalize }}</button>
+    </form>
   {% endif %}
 {% endfor %}
-
-
-<form action="{{ url_for('save_run_post', run_id=document._id) }}" method="POST">
-  <button name="destination" value="someday" type="submit">Save to Someday</button>
-  <button name="destination" value="today" type="submit">Add to Today</button>
-</form>
-
-<form action="{{ url_for('log_attempt', run_id=document._id) }}" method="GET">
+<form action="{{ url_for('show_new_attempt_form', run_id=doc._id) }}" method="GET">
   <button type="submit">Log attempt</button>
 </form>
-
-<h2>Attempts</h2>
-{% for attempt in attempts %}
-  <p>
-    <a href="{{ url_for('attempt', attempt_id=attempt._id) }}">{{ attempt.skied_at.strftime('%Y-%m-%d') }}</a>
-    — Difficulty: {{ attempt.difficulty_rating or 'Not rated' }}
-  </p>
-{% else %}
-  <p>No attempts.</p>
-{% endfor %}
-
+</div>
 </article>
-
-<p><a href="{{ url_for('find_runs', resort_id=document.resort_id) }}">Back to runs</a></p>
+{% if community %}
+  <p>Community difficulty: {{ '%.1f'|format(community.average) }}/5</p>
+{% else %}
+  <p>No community ratings yet.</p>
+{% endif %}
 </section>
 {% endblock %}

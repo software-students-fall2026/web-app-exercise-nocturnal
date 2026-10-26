@@ -2,39 +2,46 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     {% block styles %}{% endblock %}    
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ski-Oked</title>
+    <title>Stoked</title>
   </head>
   <body>
     <header class="site-header">
-      <a class="site-brand" href="{{ url_for('home') }}">Ski-Oked</a>
-
-      <details class="site-menu">
-        <summary>
-          <span></span>
-          <span></span>
-          <span></span>
-        </summary>
-
-        <nav>
-          <a href="{{ url_for('find_runs') }}">Find a run</a>
-          <a href="{{ url_for('someday') }}">Someday</a>
-          <a href="{{ url_for('today') }}">Today</a>
-          <a href="{{ url_for('history') }}">History</a>
-        </nav>
-      </details>
+      <a class="site-brand" href="{{ url_for('show_home') }}">Stoked</a>
+      {% if current_user.is_authenticated %}
+        <details class="site-menu">
+          <summary aria-label="Open navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+          </summary>
+          <nav aria-label="Main navigation">
+            <a href="{{ url_for('show_home') }}" {% if request.endpoint == 'show_home' %}aria-current="page"{% endif %}>Home</a>
+            <a href="{{ url_for('show_countries') }}" {% if request.endpoint in ('show_countries', 'show_country_resorts', 'show_resort_runs', 'show_run_details') %}aria-current="page"{% endif %}>Find a run</a>
+            <a href="{{ url_for('show_community_ratings') }}" {% if request.endpoint == 'show_community_ratings' %}aria-current="page"{% endif %}>Community ratings</a>
+            <a href="/today" {% if request.path == '/today' %}aria-current="page"{% endif %}>Today</a>
+            <a href="/someday" {% if request.path == '/someday' %}aria-current="page"{% endif %}>Someday</a>
+            <a href="{{ url_for('show_attempt_history') }}" {% if request.endpoint in ('show_attempt_history', 'show_attempt_details', 'show_edit_attempt_form') %}aria-current="page"{% endif %}>History</a>
+            <a href="{{ url_for('show_profile') }}" {% if request.endpoint in ('show_profile', 'update_display_name') %}aria-current="page"{% endif %}>Profile</a>
+            <form method="POST" action="{{ url_for('log_out_account') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="text-button" type="submit">Log out</button>
+            </form>
+          </nav>
+        </details>
+      {% endif %}
     </header>
-
-    <main>
+    <main class="page-content">
+      {% for message in get_flashed_messages() %}<p class="notice" role="status">{{ message }}</p>{% endfor %}
+      {% if error %}<p class="notice" role="alert">{{ error }}</p>{% endif %}
       {% block container %}{% endblock %}
     </main>
     <footer>
-      <p>designed lovingly by team nocturnal</p>
-      <p>data sourced from OpenSkiData / OpenSkiMap.org</p>
-      <p>© 2026 team nocturnal</p>
+      <p>Masterfully crafted by the enlightened members of Team Nocturnal.</p>
+      <p>Cartography legally stolen from <a href="https://openskimap.org/">OpenSkiMap</a>.</p>
+      <p>Photos borrowed from Wikimedia Commons. They may have nothing to do with the resort shown.</p>
     </footer>
   </body>
 </html>

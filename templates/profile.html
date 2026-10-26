@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block container %}
+<section class="find-page">
+  <h1>Your profile</h1>
+  <form class="find-form-box" method="POST" action="{{ url_for('update_display_name') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label for="email">Email</label>
+    <input id="email" type="email" value="{{ current_user.email }}" readonly>
+    <label for="display_name">Display name</label>
+    <input id="display_name" name="display_name" maxlength="80" value="{{ request.form.get('display_name', current_user.display_name) }}" required>
+    <button class="primary" type="submit">Save profile</button>
+  </form>
+</section>
+{% endblock %}
