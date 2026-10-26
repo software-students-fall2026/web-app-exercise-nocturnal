@@ -1,0 +1,152 @@
+
+/* Run History styling */
+
+body:has(.history-page) {
+    background-color: #E3E6F2;
+}
+
+.history-page {
+    max-width: 480px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    font-family: Arial, sans-serif;
+    color: #292B3E;
+}
+
+.history-page * {
+    box-sizing: border-box;
+}
+
+/* Page title */
+
+.history-page h1 {
+    font-size: 36px;
+    font-weight: 500;
+    margin: 0 0 30px;
+}
+
+/* Filters */
+
+.history-filters {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.history-filters p {
+    margin: 0 0 16px;
+}
+
+.history-filters label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.history-filters select,
+.history-filters input[type="date"],
+.history-filters input[type="datetime-local"],
+.history-filters textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    color: #292B3E;
+    background-color: #FAFAFF;
+    border: 1px solid #C9CDDF;
+    border-radius: 6px;
+}
+
+.history-filters button {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px;
+    background-color: #73799E;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.history-filters button:hover {
+    background-color: #595F86;
+}
+
+.history-filters > a {
+    display: block;
+    margin-top: 14px;
+    text-align: center;
+    color: #424866;
+}
+
+/* History cards */
+
+.history-card {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 22px;
+    margin-bottom: 24px;
+}
+
+.history-card h2 {
+    font-size: 22px;
+    margin: 0 0 16px;
+}
+
+.history-card h2 a {
+    color: #292B3E;
+    text-decoration: none;
+}
+
+.history-card p {
+    margin: 0 0 12px;
+    line-height: 1.5;
+}
+
+.history-card p:last-child {
+    margin-bottom: 0;
+}
+
+.history-card a {
+    color: #424866;
+}
+
+/* Empty history */
+
+.history-empty {
+    background-color: #F1F2FA;
+    border: 1px solid #D6DAEA;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}
+
+/* Keyboard focus */
+
+.history-page a:focus-visible,
+.history-page button:focus-visible,
+.history-page input:focus-visible,
+.history-page select:focus-visible {
+    outline: 3px solid #595F86;
+    outline-offset: 3px;
+}
+
+/* Small mobile screens */
+
+@media (max-width: 375px) {
+    .history-page {
+        padding: 20px 15px 40px;
+    }
+
+    .history-page h1 {
+        font-size: 30px;
+    }
+
+    .history-card {
+        padding: 18px;
+    }
+}

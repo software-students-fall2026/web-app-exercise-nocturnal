@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<h1>Remove run?</h1>
+
+<p>Remove {{ document.run.name }} from {{ document.list }}? </p>
+
+<form method="GET" action="{{ url_for(document.list) }}">
+    <button type="submit">Cancel</button> 
+</form>
+
+<form method="POST" action="{{ url_for('delete_saved_post', saved_id=document._id) }}">
+    <button type="submit"> Yes, remove!</button>
+</form>
+{% endblock %}

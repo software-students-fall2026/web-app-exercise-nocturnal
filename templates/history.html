@@ -1,15 +1,83 @@
+
 {% extends 'base.html' %}
 
-{% block container %}
-<h1>History</h1>
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+{% endblock %}
 
-{% for document in documents %}
-  <p>
-    <a href="{{ url_for('attempt', attempt_id=document._id) }}">{{ document.run.name if document.run else 'Run unavailable' }}</a>
-    — {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC
-    — {{ document.difficulty_rating or 'Not rated' }}
-  </p>
-{% else %}
-  <p>No attempts.</p>
-{% endfor %}
+{% block container %}
+<div class="history-page">
+
+  <h1>Run History</h1>
+
+  <form class="history-filters" action="{{ url_for('history') }}" method="GET">
+
+    <p>
+      <label for="resort_id">Filter by Resort</label>
+      <select id="resort_id" name="resort_id">
+        <option value="">All Resorts</option>
+
+        {% for resort in resorts %}
+          <option value="{{ resort._id }}"
+            {% if (resort._id|string) == selected_resort_id %}selected{% endif %}>
+            {{ resort.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </p>
+
+    <p>
+      <label for="date">Filter by Date</label>
+      <input
+        type="date"
+        id="date"
+        name="date"
+        value="{{ selected_date }}"
+      >
+    </p>
+
+    <button type="submit">Apply Filters</button>
+    <a href="{{ url_for('history') }}">Clear Filters</a>
+
+  </form>
+
+  {% for document in documents %}
+    <article class="history-card">
+
+      <h2>
+        <a href="{{ url_for('attempt', attempt_id=document._id) }}">
+          {{ document.run.name if document.run else 'Run unavailable' }}
+        </a>
+      </h2>
+
+      <p>
+        Date: {{ document.skied_at.strftime('%Y-%m-%d %H:%M') }} UTC
+      </p>
+
+      <p>
+        {% if document.completed is sameas true %}
+          Completed: Yes
+        {% elif document.completed is sameas false %}
+          Completed: No
+        {% else %}
+          Completion not recorded
+        {% endif %}
+      </p>
+
+      <p>
+        Difficulty: {{ document.difficulty_rating or 'Not rated' }}
+      </p>
+
+      <p>
+        <a href="{{ url_for('attempt', attempt_id=document._id) }}">
+          View Reflection
+        </a>
+      </p>
+
+    </article>
+  {% else %}
+    <p class="history-empty">No attempts found.</p>
+  {% endfor %}
+
+</div>
 {% endblock %}
