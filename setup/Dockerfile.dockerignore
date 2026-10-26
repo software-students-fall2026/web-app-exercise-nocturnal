@@ -1,0 +1,11 @@
+**
+!requirements.txt
+!app.py
+!templates/
+!templates/**
+!static/
+!static/**
+!setup/
+setup/*
+!setup/setup.py
+!setup/catalog.json.gz

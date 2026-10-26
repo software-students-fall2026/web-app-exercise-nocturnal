@@ -18,7 +18,7 @@ from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
 from werkzeug.exceptions import HTTPException
 
-load_dotenv()  # load environment variables from .env file
+load_dotenv(".env")  # load environment variables from .env file
 
 DIFFICULTIES = (
     "novice",
@@ -37,10 +37,13 @@ def create_app():
     app = Flask(__name__)
 
     # load flask configuration from env variables
-    configuration = dotenv_values()
+    configuration = dotenv_values(".env")
     app.config.from_mapping(configuration)
 
-    connection = pymongo.MongoClient(os.getenv("MONGO_URI"))
+    local_database = os.getenv("MONGO_LOCAL", "false").lower() == "true"
+    connection = pymongo.MongoClient(
+        os.environ["MONGO_LOCAL_URI"] if local_database else os.getenv("MONGO_URI")
+    )
     database = connection[os.getenv("MONGO_DBNAME")]
 
     try:
@@ -129,7 +132,6 @@ def create_app():
 
         return runs
 
-
     @app.route("/")
     def home():
         """Show the home page."""
@@ -138,9 +140,11 @@ def create_app():
         today_count = database.saved_runs.count_documents({"list": "today"})
         someday_count = database.saved_runs.count_documents({"list": "someday"})
 
-        latest_attempt = database.attempts.find_one(sort = [("skiid_at", -1)])
-        if latest_attempt: latest_run = database.runs.find_one({"_id": latest_attempt["run_id"]})
-        else: latest_run = None
+        latest_attempt = database.attempts.find_one(sort=[("skiid_at", -1)])
+        if latest_attempt:
+            latest_run = database.runs.find_one({"_id": latest_attempt["run_id"]})
+        else:
+            latest_run = None
 
         return render_template(
             "index.html",
@@ -148,7 +152,7 @@ def create_app():
             today_count=today_count,
             someday_count=someday_count,
             latest_attempt=latest_attempt,
-            latest_run=latest_run
+            latest_run=latest_run,
         )
 
     @app.route("/find")
@@ -250,7 +254,6 @@ def create_app():
         return redirect(url_for(destination))
 
     @app.route("/run/<run_id>/community-rating", methods=["POST"])
-
     def community_rating_post(run_id):
         run = find_document(database.runs, run_id)
         difficulty = request.form.get("difficulty_rating", "")
@@ -259,10 +262,12 @@ def create_app():
         if difficulty not in DIFFICULTIES:
             abort(400, "Choose a valid difficulty.")
 
-        database.community_ratings.insert_one({
-            "run_id": run["_id"],
-            "difficulty_rating": difficulty,
-        })
+        database.community_ratings.insert_one(
+            {
+                "run_id": run["_id"],
+                "difficulty_rating": difficulty,
+            }
+        )
 
         # Only allow redirects back to this app.
         if not next_url.startswith("/") or next_url.startswith("//"):
@@ -275,11 +280,17 @@ def create_app():
             run = database.runs.find_one({"_id": document["run_id"]})
             document["run"] = run
 
-            if run: 
-                document["resort"] = database.resorts.find_one({"_id": run["resort_id"]})
-                document["attempt_count"] = database.attempts.count_documents({"run_id": run["_id"]})
+            if run:
+                document["resort"] = database.resorts.find_one(
+                    {"_id": run["resort_id"]}
+                )
+                document["attempt_count"] = database.attempts.count_documents(
+                    {"run_id": run["_id"]}
+                )
                 document["latest_attempt"] = list(
-                    database.attempts.find({"run_id": run["_id"]}).sort("skied_at", -1).limit(1)
+                    database.attempts.find({"run_id": run["_id"]})
+                    .sort("skied_at", -1)
+                    .limit(1)
                 )
 
         return documents
@@ -293,12 +304,16 @@ def create_app():
         state = request.args.get("state", "").strip()
 
         states = sorted(
-            database.resorts.distinct("state", {"country": "US", "state": {"$ne": None}})
+            database.resorts.distinct(
+                "state", {"country": "US", "state": {"$ne": None}}
+            )
         )
 
-        documents = attach_run_details(list(database.saved_runs.find({"list": "someday"})))
+        documents = attach_run_details(
+            list(database.saved_runs.find({"list": "someday"}))
+        )
 
-        # Filter through Saved runs 
+        # Filter through Saved runs
         filtered = []
         for document in documents:
             run = document["run"]
@@ -311,13 +326,24 @@ def create_app():
             if state and (resort is None or resort.get("state") != state):
                 continue
             filtered.append(document)
-        return render_template("saved_runs.html", documents=filtered, title="Someday", name=name, difficulty=difficulty, state=state, states=states, difficulties=DIFFICULTIES)
+        return render_template(
+            "saved_runs.html",
+            documents=filtered,
+            title="Someday",
+            name=name,
+            difficulty=difficulty,
+            state=state,
+            states=states,
+            difficulties=DIFFICULTIES,
+        )
 
     @app.route("/today")
     def today():
         """show today runs."""
 
-        documents = attach_run_details(list(database.saved_runs.find({"list": "today"})))
+        documents = attach_run_details(
+            list(database.saved_runs.find({"list": "today"}))
+        )
 
         return render_template("saved_runs.html", documents=documents, title="Today")
 
@@ -329,7 +355,7 @@ def create_app():
         document["run"] = database.runs.find_one({"_id": document["run_id"]})
 
         return render_template("confirm_delete.html", document=document)
-    
+
     @app.route("/saved/<saved_id>/delete", methods=["POST"])
     def delete_saved_post(saved_id):
         """remove a run from one list."""
@@ -365,7 +391,6 @@ def create_app():
 
         return redirect(url_for("attempt", attempt_id=attempt_id))
 
-    
     @app.route("/history")
     def history():
         """Show past attempts, optionally filtered by resort and date."""
@@ -382,10 +407,7 @@ def create_app():
             if not ObjectId.is_valid(resort_id):
                 abort(400, "Invalid resort.")
 
-            runs = database.runs.find(
-                {"resort_id": ObjectId(resort_id)},
-                {"_id": 1}
-            )
+            runs = database.runs.find({"resort_id": ObjectId(resort_id)}, {"_id": 1})
 
             run_ids = [run["_id"] for run in runs]
             query["run_id"] = {"$in": run_ids}
@@ -397,39 +419,27 @@ def create_app():
             except ValueError:
                 abort(400, "Invalid date.")
 
-            start = datetime.datetime.combine(
-                date, datetime.time.min
-            )
+            start = datetime.datetime.combine(date, datetime.time.min)
             end = start + datetime.timedelta(days=1)
 
-            query["skied_at"] = {
-                "$gte": start,
-                "$lt": end
-            }
+            query["skied_at"] = {"$gte": start, "$lt": end}
 
         # Retrieve matching attempts, newest first
-        documents = list(
-            database.attempts.find(query).sort("skied_at", -1)
-        )
+        documents = list(database.attempts.find(query).sort("skied_at", -1))
 
         for document in documents:
-            document["run"] = database.runs.find_one(
-                {"_id": document["run_id"]}
-            )
+            document["run"] = database.runs.find_one({"_id": document["run_id"]})
 
         # Retrieve resorts for the dropdown
-        resorts = list(
-            database.resorts.find().sort("name", 1)
-        )
+        resorts = list(database.resorts.find().sort("name", 1))
 
         return render_template(
             "history.html",
             documents=documents,
             resorts=resorts,
             selected_resort_id=resort_id,
-            selected_date=selected_date
+            selected_date=selected_date,
         )
-
 
     @app.route("/attempt/<attempt_id>")
     def attempt(attempt_id):
@@ -438,9 +448,7 @@ def create_app():
         document = find_document(database.attempts, attempt_id)
         run = find_document(database.runs, str(document["run_id"]))
 
-        return render_template(
-            "reflection.html", document=document, run=run
-        )
+        return render_template("reflection.html", document=document, run=run)
 
     @app.route("/attempt/<attempt_id>/edit")
     def edit_attempt(attempt_id):
