@@ -88,5 +88,6 @@ remain `true` or `false`, including explicit `false` values.
     "skied_at": datetime.datetime.utcnow(),
     "difficulty_rating": none,
     "notes": "",
+    "photo": "filename.jpg",
 }
 ```

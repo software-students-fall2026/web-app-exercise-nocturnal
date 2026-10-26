@@ -17,6 +17,7 @@ import pymongo
 from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
 from werkzeug.exceptions import HTTPException
+from werkzeug.utils import secure_filename
 
 load_dotenv(".env")  # load environment variables from .env file
 
@@ -84,13 +85,27 @@ def create_app():
         if completed not in ("yes", "no"):
             abort(400, "Please indicate whether you completed the run.")
 
-        return {
+        # based on https://flask.palletsprojects.com/en/stable/patterns/fileuploads/
+        photo = request.files.get("photo")
+        photo_name = None
+        if photo and photo.filename:
+            photo_name = secure_filename(photo.filename)
+            folder = os.path.join(app.static_folder, "uploads")
+            os.makedirs(folder, exist_ok=True)
+            photo.save(os.path.join(folder, photo_name))
+
+        document = {
             "run_id": run_id,
             "skied_at": skied_at,
             "difficulty_rating": difficulty,
             "notes": request.form.get("notes", "").strip(),
             "completed": completed == "yes",
         }
+
+        if photo_name:
+            document["photo"] = photo_name
+
+        return document
 
     def attach_community_ratings(runs):
         run_ids = [run["_id"] for run in runs]
@@ -447,6 +462,11 @@ def create_app():
 
         document = find_document(database.attempts, attempt_id)
         run = find_document(database.runs, str(document["run_id"]))
+
+        # photos saved on the computer that uploads them
+        photo = document.get("photo")
+        if photo and not os.path.exists(os.path.join(app.static_folder, "uploads", photo)):
+            document["photo"] = None
 
         return render_template("reflection.html", document=document, run=run)
 
