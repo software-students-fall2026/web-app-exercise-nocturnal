@@ -59,6 +59,7 @@ body:has(.history-page) {
     border-radius: 6px;
 }
 
+.history-card button,
 .history-filters button {
     width: 100%;
     min-height: 48px;
@@ -71,6 +72,7 @@ body:has(.history-page) {
     cursor: pointer;
 }
 
+.history-card button:hover,
 .history-filters button:hover {
     background-color: #595F86;
 }
@@ -113,6 +115,9 @@ body:has(.history-page) {
 
 .history-card a {
     color: #424866;
+}
+.history-card form {
+    margin-top: 12px;
 }
 
 /* Empty history */
