@@ -37,6 +37,8 @@
     </div>
   {% endif %}
 
+  <p><a href="{{ url_for('find_runs') }}">Find a run</a></p>
+  
   {% for document in documents %}
     <article class="saved_runs-card">
       {% if document.run %}
@@ -63,20 +65,19 @@
         <p>Run unavailable.</p>
       {% endif %}
     
-        {% if document.run and title == 'Someday' %}
+      {% if document.run and title == 'Someday' %}
         <form action="{{ url_for('save_run_post', run_id=document.run._id) }}" method="POST">
           <button name="destination" value="today" type="submit">Add to Today</button>
         </form>
-        {% endif %}
+      {% endif %}
 
         <form action="{{ url_for('confirm_delete_saved', saved_id=document._id) }}" method="GET">
           <button type="submit" class="removeb">Remove</button>
         </form>
-      </div>
+    </article>
   {% else %}
     <p class="saved_runs-empty">No saved runs.</p>
   {% endfor %}
 
-  <p><a href="{{ url_for('find_runs') }}">Find a run</a></p>
 </div>
 {% endblock %}
